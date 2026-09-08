@@ -38,6 +38,7 @@ coding!
 - Vandna Kapoor (Developer): [GitHub](https://github.com/vandnakapoor19) / [LinkedIn](https://www.linkedin.com/in/vandnakapoor)
 - Alex Njaiya (Developer) #3: [Github](https://github.com/alex-njaiya) / [LinkedIn](https://www.linkedin.com/in/alex-njaiya)
 - Alex Takamizawa (Developer): [GitHub](https://github.com/alexkt1022) / [LinkedIn](https://linkedin.com/in/atakamizawa)
+- Hasan Sammour (Developer): [GitHub](https://github.com/HasanSammour) / [LinkedIn](https://www.linkedin.com/in/hasan-sammour-72657a3a1/)
 
    ...
 - Teammate name #n: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
