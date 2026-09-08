@@ -35,9 +35,9 @@ your repo access and to practice PR'ing with your team *before* you start
 coding!
 
 - Alex Thomas (Scrum Master): [GitHub](https://github.com/BagelTime) / [LinkedIn](https://linkedin.com/in/ajt11176)
-- Teammate name #2: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
 - Vandna Kapoor (Developer): [GitHub](https://github.com/vandnakapoor19) / [LinkedIn](https://www.linkedin.com/in/vandnakapoor)
 - Alex Njaiya (Developer) #3: [Github](https://github.com/alex-njaiya) / [LinkedIn](https://www.linkedin.com/in/alex-njaiya)
+- Alex Takamizawa (Developer): [GitHub](https://github.com/alexkt1022) / [LinkedIn](https://linkedin.com/in/atakamizawa)
 
    ...
 - Teammate name #n: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
