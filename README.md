@@ -37,5 +37,5 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 - Alex Takamizawa (Developer): [GitHub](https://github.com/alexkt1022) / [LinkedIn](https://linkedin.com/in/atakamizawa)
 - Hasan Sammour (Developer): [GitHub](https://github.com/HasanSammour) / [LinkedIn](https://www.linkedin.com/in/hasan-sammour-72657a3a1/)
 - Bathshua Bradley (Shadow Scrum Master): [GitHub](https://github.com/Awsomgal) / [LinkedIn](https://linkedin.com/in/bathshuabradley/)
-   ...
+  ...
 - Teammate name #n: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
