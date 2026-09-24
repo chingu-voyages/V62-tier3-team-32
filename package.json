@@ -2,6 +2,7 @@
   "name": "v62-tier3-team-32",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
