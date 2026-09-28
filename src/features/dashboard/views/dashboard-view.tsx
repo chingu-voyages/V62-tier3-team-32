@@ -1,20 +1,8 @@
-// todo: add color theme to globals.css (consult lovable project 53)
-
 import Image from 'next/image';
-import Link from 'next/link';
 
 import heroFarm from '@/assets/hero-farm.jpg';
 import recallGreens from '@/assets/recall-greens.jpg';
 import { farms } from '../data/farms';
-
-const heroPill =
-  'inline-block rounded-full bg-coral/15 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-coral';
-const primaryCta =
-  'inline-block rounded-full bg-brand px-8 py-4 text-lg font-bold text-cream shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1';
-const coralCta =
-  'inline-block rounded-full bg-coral px-8 py-4 text-lg font-bold text-cream shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1';
-const amberCta =
-  'inline-block rounded-full bg-accent px-8 py-4 text-lg font-bold text-ink shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1';
 
 export function DashboardView() {
   return (
@@ -22,7 +10,9 @@ export function DashboardView() {
       {/* HERO */}
       <section className='mx-auto grid max-w-6xl items-center gap-12 px-6 pt-14 pb-8 lg:grid-cols-2'>
         <div>
-          <span className={heroPill}>Fresh · Local · Real-time</span>
+          <span className='bg-coral/15 text-coral inline-block rounded-full px-4 py-1.5 text-sm font-bold tracking-widest uppercase'>
+            Fresh · Local · Real-time
+          </span>
           <h1 className='font-display text-ink mt-6 text-6xl leading-[0.95] font-bold lg:text-7xl'>
             Eat what&apos;s <span className='text-brand'>growing</span> right
             now.
@@ -34,12 +24,18 @@ export function DashboardView() {
             recall hits something you buy.
           </p>
           <div className='mt-8 flex flex-wrap gap-4'>
-            <Link href='#farms' className={primaryCta}>
+            <a
+              href='#farms'
+              className='bg-brand text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+            >
               Find farms near me
-            </Link>
-            <Link href='#join' className={coralCta}>
+            </a>
+            <a
+              href='#join'
+              className='bg-coral text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+            >
               Become a farm
-            </Link>
+            </a>
           </div>
         </div>
         <div>
@@ -118,7 +114,12 @@ export function DashboardView() {
                 found a local alternative at Sunsprig Farm — 2.1 mi away,
                 available today.
               </p>
-              <a href='#farms' className={`${coralCta} mt-6`}>
+              <a
+                href='#farms'
+                className={
+                  'bg-coral text-cream mt-6 inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+                }
+              >
                 See local alternative
               </a>
             </div>
