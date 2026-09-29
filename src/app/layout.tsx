@@ -1,8 +1,10 @@
+import Navbar from '@/components/navbar/Navbar';
 import { cn } from 'cn';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import './globals.css';
+import './header.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,7 +30,17 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         'h-full antialiased'
       )}
     >
-      <body className='flex min-h-full flex-col'>{children}</body>
+      <body className='page-body'>
+        <div className='app-shell'>
+          <header className='site-header'>
+            <div className='page-container'>
+              <Navbar />
+            </div>
+          </header>
+
+          <main className='page-container main-content'>{children}</main>
+        </div>
+      </body>
     </html>
   );
 }

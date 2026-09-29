@@ -1,0 +1,83 @@
+.site-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+}
+
+.page-container{
+    width: 100%;
+}
+
+.navbar-shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  min-height: 96px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  gap: 1.5rem;
+}
+
+.brand-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #0c3d28;
+  padding: 0.25rem 0;
+}
+
+.brand-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-size: clamp(1.6rem, 1.7vw, 2.2rem);
+}
+
+.brand-name-root {
+  color: #0d4f37;
+}
+
+.brand-name-source {
+  color: #1d6b4a;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.search-button {
+  padding: 0.45rem 0.7rem;
+  color: #1f2937;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+}
+
+.login-button {
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  background: #f6c760;
+  color: #1f2937;
+  font-weight: 700;
+  border: none;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+}
+
