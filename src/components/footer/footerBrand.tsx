@@ -1,0 +1,16 @@
+import Image from "next/image";
+import footerLogo from "@/assets/logo-footer.png";
+
+export default function FooterBrand() {
+  return (
+    <div className="footer-brand-block">
+      <div className="footer-brand">
+        <Image src={footerLogo} alt="" className="footer-brand-mark" sizes="32px" />
+        <span>RootSource</span>
+      </div>
+      <p className="footer-copy">
+        Local farms, live harvests, and recall protection — all in your neighborhood.
+      </p>
+    </div>
+  );
+}
