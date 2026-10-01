@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function NavbarActions() {
   return (
     <div className='nav-actions'>
@@ -6,7 +8,7 @@ export default function NavbarActions() {
       </button>
 
       <button type='button' className='login-button'>
-        Log in
+        <Link href='/login'>Log in</Link>
       </button>
     </div>
   );
