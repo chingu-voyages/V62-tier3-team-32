@@ -23,12 +23,7 @@ export default function FooterTeam() {
       </ul>
 
       <div className="footer-actions">
-        <button type="button" className="team-button">
-          About the team
-          <span className="action-icon">↗</span>
-        </button>
-
-        <a href="#" className="github-link">
+        <a target="_blank" rel="noopener noreferrer" href="https://github.com/chingu-voyages/V62-tier3-team-32" className="github-link">
           GitHub repository
           <span className="github-icon">↗</span>
         </a>
