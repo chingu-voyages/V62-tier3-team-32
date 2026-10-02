@@ -1,6 +1,6 @@
 export default function FooterExplore() {
   return (
-    <div className="footer-column">
+    <div className='footer-column'>
       <h3>Explore</h3>
       <ul>
         <li>Search farms</li>
