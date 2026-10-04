@@ -5,6 +5,7 @@ import farmSunsprig from '@/assets/farm-sunsprig.jpg';
 export const farms = [
   {
     name: 'Sunsprig Farm',
+    href: '/farmer-profile',
     badge: 'Certified Organic',
     badgeClass: 'bg-brand/10 text-brand',
     meta: '4.9 ★ · 2.1 mi · No-till, regenerative',

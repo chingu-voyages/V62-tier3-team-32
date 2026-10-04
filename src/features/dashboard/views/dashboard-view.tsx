@@ -178,7 +178,7 @@ export function DashboardView() {
                 </h3>
                 <p className='text-ink/60 mt-1 text-sm'>{farm.meta}</p>
                 <a
-                  href='#'
+                  href={farm.href ?? '#'}
                   className='bg-accent text-ink mt-5 inline-block w-full rounded-full px-5 py-3 text-center font-bold shadow-[3px_3px_0_rgba(33,48,28,0.25)] transition-transform hover:-translate-y-0.5'
                 >
                   {farm.action}
