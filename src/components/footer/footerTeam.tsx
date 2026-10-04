@@ -2,7 +2,7 @@ const teamMembers = [
   { name: "Alex Thomas · Scrum Master", href: "https://linkedin.com/in/ajt11176" },
   { name: "Vandna Kapoor · Developer", href: "https://www.linkedin.com/in/vandnakapoor" },
   { name: "Alex Njaiya · Developer", href: "https://www.linkedin.com/in/alex-njaiya" },
-  { name: "Alex Takamizawa · Developer", href: "https://linkedin.com/in/atakamizawa" },
+  { name: "Alex Takamizawa · Developer", href: "https://www.linkedin.com/in/alextakamizawa/" },
   { name: "Hasan Sammour · Developer", href: "https://www.linkedin.com/in/hasan-sammour-72657a3a1/" },
   { name: "Bathshua Bradley · Shadow Scrum Master", href: "https://linkedin.com/in/bathshuabradley/" },
 ];
@@ -28,12 +28,8 @@ export default function FooterTeam() {
       </ul>
 
       <div className="footer-actions">
-        <button type="button" className="team-button">
-          About the team
-          <span className="action-icon">↗</span>
-        </button>
-
-        <a href="#" className="github-link">
+       
+        <a href="https://github.com/chingu-voyages/V62-tier3-team-32" className="github-link">
           GitHub repository
           <span className='github-icon'>↗</span>
         </a>
