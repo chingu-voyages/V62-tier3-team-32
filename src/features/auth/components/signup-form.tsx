@@ -55,6 +55,7 @@ export function SignupCard() {
         address,
         role,
       });
+
       // Handle success routing here (e.g., router.push('/dashboard'))
     } catch (err: any) {
       setError(err?.message || 'Something went wrong during signup.');
