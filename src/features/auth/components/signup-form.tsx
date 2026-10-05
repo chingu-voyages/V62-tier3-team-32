@@ -41,6 +41,8 @@ export function SignupCard() {
     const password = formData.get('password') as string;
     const acceptTerms = formData.get('terms') === 'on';
 
+    const photoFile = formData.get('photo') as File;
+
     if (!acceptTerms) {
       setError('You must accept the terms and conditions.');
       setIsLoading(false);
@@ -48,12 +50,32 @@ export function SignupCard() {
     }
 
     try {
+      let base64Image: string | undefined = undefined;
+
+      // 2. Convert the image file to a Base64 string only if a file was actually chosen
+      if (photoFile && photoFile.size > 0) {
+        // Basic client-side check to prevent huge image strings (e.g., limit to 2MB)
+        if (photoFile.size > 2 * 1024 * 1024) {
+          setError('Image must be smaller than 2MB.');
+          setIsLoading(false);
+          return;
+        }
+
+        base64Image = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(photoFile);
+        });
+      }
+
       await authClient.signUp.email({
         email,
         password,
         name,
         address,
         role,
+        image: base64Image
       });
 
       // Handle success routing here (e.g., router.push('/dashboard'))
@@ -183,6 +205,18 @@ export function SignupCard() {
                   Privacy Policy
                 </Link>
               </FieldLabel>
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor='photo'>Profile Photo (Optional)</FieldLabel>
+              <Input
+                id='photo'
+                name='photo'
+                type='file'
+                accept='image/*'
+                disabled={isLoading}
+                className='file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer rounded-xl file:mr-4 file:rounded-full file:border-0 file:px-3 file:py-1 file:text-xs file:font-semibold'
+              />
             </Field>
 
             <Field>
