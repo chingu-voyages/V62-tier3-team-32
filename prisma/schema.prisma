@@ -8,71 +8,69 @@ datasource db {
 }
 
 model User {
-  id            String  @id
+  id            String   @id @default(cuid())
   name          String
-  email         String
-  emailVerified Boolean @default(false)
+  email         String   @unique
+  emailVerified Boolean  @default(false)
   image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  role          UserRole @default(Consumer)
+
+  // Your custom field added to the core model
+  address String
 
   sessions Session[]
   accounts Account[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("user")
+}
 
-  @@unique([email])
-  @@map("users")
+enum UserRole {
+  Consumer
+  Farmer
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
   expiresAt DateTime
-  token     String
   ipAddress String?
   userAgent String?
-  userId    String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([token])
-  @@index([userId])
-  @@map("sessions")
+  @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accountId             String
   providerId            String
-  userId                String
   accessToken           String?
   refreshToken          String?
-  idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
+  idToken               String?
   password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@map("accounts")
+  @@map("account")
 }
 
 model Verification {
-  id         String   @id
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([identifier])
-  @@map("verifications")
+  @@map("verification")
 }
