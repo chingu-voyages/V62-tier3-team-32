@@ -153,3 +153,40 @@
     align-items: flex-start;
   }
 }
+
+.footer-copyright {
+  font-weight: 700;
+  margin: 0 0 1rem;
+  color: rgba(232, 241, 236, 0.8);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.footer-team-member {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+}
+
+.footer-team-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.footer-team-links .team-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  text-decoration: none;
+}
+
+.footer-team-links .team-link:focus-visible {
+  outline: 2px solid #f5c75d;
+  outline-offset: 4px;
+}
