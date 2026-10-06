@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  CONSUMER
+  FARMER
+}
+
 model User {
   id            String  @id
   name          String
@@ -14,14 +19,72 @@ model User {
   emailVerified Boolean @default(false)
   image         String?
 
+  role          Role      @default(CONSUMER)
+  address       String?
+
   sessions Session[]
   accounts Account[]
+
+  consumerProfile ConsumerProfile?
+  farmerProfile   FarmerProfile?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([email])
   @@map("users")
+}
+
+model ConsumerProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  zipCode   String
+  state     String
+  latitude  Float
+  longitude Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([state])
+  @@index([zipCode])
+  @@index([latitude, longitude])
+  @@map("consumer_profiles")
+}
+
+enum DeliveryOptions {
+  PICKUP
+  DELIVERY
+  BOTH
+}
+
+model FarmerProfile {
+  id              String           @id @default(uuid())
+  userId          String           @unique
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  farmName        String
+  zipCode         String
+  state           String
+  latitude        Float
+  longitude       Float
+
+  deliveryOptions DeliveryOptions
+  coverPhotoUrl   String?
+  about           String?
+  certifications  Json?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([state])
+  @@index([zipCode])
+  @@index([latitude, longitude])
+  @@map("farmer_profiles")
 }
 
 model Session {
