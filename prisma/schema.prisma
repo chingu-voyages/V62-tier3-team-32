@@ -16,8 +16,8 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   role          UserRole @default(Consumer)
+  onboarded     Boolean  @default(false) // flagging first-time logins
 
-  // Your custom field added to the core model
   address String
 
   sessions Session[]
