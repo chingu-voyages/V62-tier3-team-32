@@ -2,12 +2,15 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import logo from '@/assets/header_logo.png';
 import { authClient } from '@/lib/auth/auth-client';
+import { toast } from './ui/toast';
 
 export function Navbar() {
   const { data: session } = authClient.useSession();
+  const router = useRouter();
 
   return (
     <nav className='mx-auto my-0 flex min-h-24 w-full max-w-300 items-center justify-between gap-6 px-5 py-0'>
@@ -34,7 +37,16 @@ export function Navbar() {
         {session ? (
           <button
             type='button'
-            onClick={() => authClient.signOut()}
+            onClick={async () => {
+              await authClient.signOut();
+
+              router.push('/login');
+
+              toast.add({
+                type: 'success',
+                description: 'Logged out successfully.',
+              });
+            }}
             className='login-button'
           >
             Log Out
