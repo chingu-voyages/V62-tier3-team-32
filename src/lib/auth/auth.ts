@@ -30,8 +30,14 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          const role = user.role == 'farmer' ? 'farmer' : 'consumer';
+          const role = user.role == 'FARMER' ? 'FARMER' : 'CONSUMER';
           return {data: {...user, role}}
+        }
+      },
+      update: {
+        before: async (data) => {
+          const {role, ...rest} = data;
+          return {data: rest}
         }
       }
     }
