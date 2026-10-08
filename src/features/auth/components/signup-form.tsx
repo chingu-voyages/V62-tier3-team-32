@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Field,
   FieldGroup,
@@ -62,17 +61,17 @@ export function SignupCard() {
         });
       }
 
-      const {error: signUpError} = await authClient.signUp.email({
+      const { error: signUpError } = await authClient.signUp.email({
         email,
         password,
         name,
         address,
         role: role.toUpperCase(),
-        image: base64Image
+        image: base64Image,
       });
 
       if (signUpError) {
-        setError(signUpError.message ?? 'Signup failed')
+        setError(signUpError.message ?? 'Signup failed');
         return;
       }
 
