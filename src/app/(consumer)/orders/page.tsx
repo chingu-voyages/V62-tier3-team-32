@@ -1,4 +1,3 @@
-// src/app/(consumer)/orders/page.tsx
 import { headers } from 'next/headers';
 
 import {
@@ -72,7 +71,7 @@ export default async function OrdersPage() {
           ) : (
             <div className='space-y-3'>
               {past.map((o) => (
-                <PastOrderRow key={o.id} order={o} />
+                <PastOrderRow key={o.id} order={o} name={o.farmerName}/>
               ))}
             </div>
           )}
