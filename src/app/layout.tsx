@@ -1,9 +1,9 @@
 import Footer from '@/components/footer/footer';
-import Navbar from '@/components/navbar/Navbar';
 import { cn } from 'cn';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import { Navbar } from '@/components/navbar';
 import './footer.css';
 import './globals.css';
 import './header.css';
@@ -39,9 +39,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
               <Navbar />
             </div>
           </header>
-
           <main className='page-container main-content'>{children}</main>
-
           <Footer />
         </div>
       </body>

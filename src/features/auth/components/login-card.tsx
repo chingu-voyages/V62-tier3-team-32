@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -21,11 +22,29 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { login } from '@/features/actions';
+import { authClient } from '@/lib/auth/auth-client';
 
-// todo: decide between actions, RHF, Tanstack; refactor accordingly
 export function LoginCard() {
   const [role, setRole] = useState('consumer');
+  const router = useRouter();
+
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    await authClient.signIn.email(
+      {
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+      },
+      {
+        onSuccess: () => {
+          router.replace('/');
+        },
+      }
+    );
+  };
 
   return (
     <Card className='mx-auto w-full max-w-md rounded-3xl border-2'>
@@ -36,7 +55,7 @@ export function LoginCard() {
         <CardDescription>Choose your account type to continue.</CardDescription>
       </CardHeader>
       <CardContent className='space-y-5'>
-        <form action={login}>
+        <form onSubmit={(e) => handleSubmit(e)}>
           <FieldGroup>
             <Field>
               <Tabs value={role} onValueChange={setRole}>
