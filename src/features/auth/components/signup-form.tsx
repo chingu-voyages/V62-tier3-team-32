@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { authClient } from '../../../lib/auth/auth-client'; // Adjust path to your auth client setup
+import { authClient } from '../../../lib/auth/auth-client';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -39,15 +39,8 @@ export function SignupCard() {
     const email = formData.get('email') as string;
     const address = formData.get('address') as string;
     const password = formData.get('password') as string;
-    const acceptTerms = formData.get('terms') === 'on';
 
     const photoFile = formData.get('photo') as File;
-
-    if (!acceptTerms) {
-      setError('You must accept the terms and conditions.');
-      setIsLoading(false);
-      return;
-    }
 
     try {
       let base64Image: string | undefined = undefined;
@@ -69,7 +62,7 @@ export function SignupCard() {
         });
       }
 
-      await authClient.signUp.email({
+      const {error: signUpError} = await authClient.signUp.email({
         email,
         password,
         name,
@@ -77,6 +70,11 @@ export function SignupCard() {
         role,
         image: base64Image
       });
+
+      if (signUpError) {
+        setError(signUpError.message ?? 'Signup failed')
+        return;
+      }
 
       // Handle success routing here (e.g., router.push('/dashboard'))
     } catch (err: any) {
@@ -123,7 +121,7 @@ export function SignupCard() {
               <Tabs value={role} onValueChange={setRole}>
                 <TabsList className='grid w-full grid-cols-2 rounded-full'>
                   <TabsTrigger value='consumer' className='rounded-full'>
-                    Shopper
+                    Consumer
                   </TabsTrigger>
                   <TabsTrigger value='farmer' className='rounded-full'>
                     Farmer
@@ -184,29 +182,6 @@ export function SignupCard() {
               />
             </Field>
 
-            <Field orientation='horizontal' className='gap-2'>
-              <Checkbox id='terms' name='terms' required disabled={isLoading} />
-              <FieldLabel
-                htmlFor='terms'
-                className='text-muted-foreground text-xs leading-none font-normal'
-              >
-                I accept the{' '}
-                <Link
-                  href='#'
-                  className='text-primary font-semibold hover:underline'
-                >
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link
-                  href='#'
-                  className='text-primary font-semibold hover:underline'
-                >
-                  Privacy Policy
-                </Link>
-              </FieldLabel>
-            </Field>
-
             <Field>
               <FieldLabel htmlFor='photo'>Profile Photo (Optional)</FieldLabel>
               <Input
@@ -228,7 +203,7 @@ export function SignupCard() {
               >
                 {isLoading
                   ? 'Creating account...'
-                  : `Sign up as ${role === 'farmer' ? 'farmer' : 'shopper'}`}
+                  : `Sign up as ${role === 'farmer' ? 'farmer' : 'consumer'}`}
               </Button>
             </Field>
 
