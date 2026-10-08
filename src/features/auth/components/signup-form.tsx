@@ -86,7 +86,7 @@ export function SignupCard({
       setIsLoading(false);
     }
 
-    router.push('onboarding');
+    router.push('/onboarding');
   }
 
   // Handle Google OAuth
