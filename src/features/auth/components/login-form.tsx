@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/components/ui/toast';
 import { authClient } from '@/lib/auth/auth-client';
 
 export function LoginForm() {
@@ -33,6 +34,10 @@ export function LoginForm() {
       {
         onSuccess: () => {
           router.replace('/');
+          toast.add({
+            type: 'success',
+            description: 'Logged in successfully.',
+          });
         },
       }
     );
