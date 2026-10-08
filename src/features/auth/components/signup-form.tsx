@@ -67,7 +67,7 @@ export function SignupCard() {
         password,
         name,
         address,
-        role,
+        role: role.toUpperCase(),
         image: base64Image
       });
 
