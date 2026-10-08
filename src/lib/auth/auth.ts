@@ -10,5 +10,31 @@ export const auth = betterAuth({
   advanced: {
     database: { joins: true },
   },
+  user: {
+    additionalFields: {
+      address: {
+        type: "string",
+        required: true,
+        input: true
+      },
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: 'consumer',
+        input: true
+      }
+    }
+  },
+
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const role = user.role == 'farmer' ? 'farmer' : 'consumer';
+          return {data: {...user, role}}
+        }
+      }
+    }
+  },
   plugins: [],
 });

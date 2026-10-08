@@ -7,70 +7,135 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  image         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  role          UserRole @default(Consumer)
-  onboarded     Boolean  @default(false) // flagging first-time logins
+enum Role {
+  CONSUMER
+  FARMER
+}
 
-  address String
+model User {
+  id            String  @id
+  name          String
+  email         String
+  emailVerified Boolean @default(false)
+  image         String?
+
+  role          Role      @default(CONSUMER)
+  address       String?
 
   sessions Session[]
   accounts Account[]
 
-  @@map("user")
-}
+  consumerProfile ConsumerProfile?
+  farmerProfile   FarmerProfile?
 
-enum UserRole {
-  Consumer
-  Farmer
-}
-
-model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  expiresAt DateTime
-  ipAddress String?
-  userAgent String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("session")
+  @@unique([email])
+  @@map("users")
+}
+
+model ConsumerProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  zipCode   String
+  state     String
+  latitude  Float
+  longitude Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([state])
+  @@index([zipCode])
+  @@index([latitude, longitude])
+  @@map("consumer_profiles")
+}
+
+enum DeliveryOptions {
+  PICKUP
+  DELIVERY
+  BOTH
+}
+
+model FarmerProfile {
+  id              String           @id @default(uuid())
+  userId          String           @unique
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  farmName        String
+  zipCode         String
+  state           String
+  latitude        Float
+  longitude       Float
+
+  deliveryOptions DeliveryOptions
+  coverPhotoUrl   String?
+  about           String?
+  certifications  Json?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([state])
+  @@index([zipCode])
+  @@index([latitude, longitude])
+  @@map("farmer_profiles")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([token])
+  @@index([userId])
+  @@map("sessions")
 }
 
 model Account {
-  id                    String    @id @default(cuid())
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String    @id
   accountId             String
   providerId            String
+  userId                String
   accessToken           String?
   refreshToken          String?
+  idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  idToken               String?
   password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
 
-  @@map("account")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
 }
 
 model Verification {
-  id         String    @id @default(cuid())
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
 
-  @@map("verification")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
 }
