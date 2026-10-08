@@ -201,7 +201,7 @@ export function DashboardView() {
           </p>
           <div className='mt-8 flex flex-wrap justify-center gap-4'>
             <a
-              href='#'
+              href='/onboarding'
               className='bg-accent text-ink rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
             >
               Create consumer profile
