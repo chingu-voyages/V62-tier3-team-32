@@ -1,14 +1,12 @@
-// src/features/orders/order-ui.tsx
 import Link from 'next/link';
 
 import { money, shortDate } from '@/lib/format';
 
-export type OrderView = {
+export type OrderBase = {
   id: string;
   status: string;
   total: number;
   createdAt: Date;
-  farmerName: string;
   items: { id: string; name: string; quantity: number; unitPrice: number }[];
 };
 
@@ -21,18 +19,27 @@ const PILL: Record<string, { label: string; className: string }> = {
 };
 
 export function StatusPill({ status }: { status: string }) {
-  const pill = PILL[status] ?? { label: status, className: 'bg-ink/10 text-ink' };
+  const pill = PILL[status] ?? {
+    label: status,
+    className: 'bg-ink/10 text-ink',
+  };
   return (
-    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${pill.className}`}>
+    <span
+      className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${pill.className}`}
+    >
       {pill.label}
     </span>
   );
 }
 
 const STEPS = ['Placed', 'Confirmed', 'Ready'];
-const STEP_INDEX: Record<string, number> = { PENDING: 0, CONFIRMED: 1, READY: 2 };
+const STEP_INDEX: Record<string, number> = {
+  PENDING: 0,
+  CONFIRMED: 1,
+  READY: 2,
+};
 
-function OrderProgress({ status }: { status: string }) {
+export function OrderProgress({ status }: { status: string }) {
   const current = STEP_INDEX[status] ?? 0;
   return (
     <ol aria-label='Order progress' className='mt-5 flex items-center'>
@@ -68,7 +75,7 @@ function OrderProgress({ status }: { status: string }) {
   );
 }
 
-function ItemLines({ items }: { items: OrderView['items'] }) {
+export function ItemLines({ items }: { items: OrderView['items'] }) {
   return (
     <ul className='space-y-1 text-sm'>
       {items.map((item) => (
@@ -76,7 +83,9 @@ function ItemLines({ items }: { items: OrderView['items'] }) {
           <span>
             {item.quantity} × {item.name}
           </span>
-          <span className='text-ink/60'>{money(item.unitPrice * item.quantity)}</span>
+          <span className='text-ink/60'>
+            {money(item.unitPrice * item.quantity)}
+          </span>
         </li>
       ))}
     </ul>
@@ -88,10 +97,16 @@ export function PendingOrderCard({ order }: { order: OrderView }) {
     <article className='border-ink/10 rounded-3xl border-2 bg-white p-6 shadow-[4px_4px_0_rgba(33,48,28,0.15)]'>
       <div className='flex items-start justify-between gap-4'>
         <div>
-          <h3 className='font-display text-ink text-2xl font-semibold'>{order.farmerName}</h3>
-          <p className='text-ink/60 text-sm'>Ordered {shortDate(order.createdAt)}</p>
+          <h3 className='font-display text-ink text-2xl font-semibold'>
+            {order.farmerName}
+          </h3>
+          <p className='text-ink/60 text-sm'>
+            Ordered {shortDate(order.createdAt)}
+          </p>
         </div>
-        <p className='font-display text-ink text-2xl font-semibold'>{money(order.total)}</p>
+        <p className='font-display text-ink text-2xl font-semibold'>
+          {money(order.total)}
+        </p>
       </div>
       <OrderProgress status={order.status} />
       <div className='border-ink/10 mt-5 border-t pt-4'>
@@ -101,18 +116,27 @@ export function PendingOrderCard({ order }: { order: OrderView }) {
   );
 }
 
-export function PastOrderRow({ order }: { order: OrderView }) {
+export function PastOrderRow({
+  order,
+  name,
+}: {
+  order: OrderBase;
+  name: string;
+}) {
   return (
     <details className='group border-ink/10 rounded-2xl border-2 bg-white'>
       <summary className='focus-visible:ring-brand flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl p-4 focus-visible:ring-2 [&::-webkit-details-marker]:hidden'>
         <div>
-          <p className='text-ink font-semibold'>{order.farmerName}</p>
+          <p className='text-ink font-semibold'>{name}</p>
           <p className='text-ink/60 text-sm'>{shortDate(order.createdAt)}</p>
         </div>
         <div className='flex items-center gap-3'>
           <StatusPill status={order.status} />
           <span className='text-ink font-semibold'>{money(order.total)}</span>
-          <span aria-hidden className='text-ink/40 transition-transform group-open:rotate-90'>
+          <span
+            aria-hidden
+            className='text-ink/40 transition-transform group-open:rotate-90'
+          >
             ›
           </span>
         </div>
@@ -127,8 +151,12 @@ export function PastOrderRow({ order }: { order: OrderView }) {
 export function EmptyPending() {
   return (
     <div className='border-ink/20 rounded-3xl border-2 border-dashed p-8 text-center'>
-      <p className='font-display text-ink text-2xl font-semibold'>Nothing on the way.</p>
-      <p className='text-ink/60 mt-1'>Browse farms near you and place your first order.</p>
+      <p className='font-display text-ink text-2xl font-semibold'>
+        Nothing on the way.
+      </p>
+      <p className='text-ink/60 mt-1'>
+        Browse farms near you and place your first order.
+      </p>
       <Link
         href='/#farms'
         className='bg-brand text-cream mt-5 inline-block rounded-full px-6 py-3 font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-0.5'
@@ -138,3 +166,6 @@ export function EmptyPending() {
     </div>
   );
 }
+
+export type OrderView = OrderBase & { farmerName: string };
+export type FarmerOrderView = OrderBase & { consumerName: string };
