@@ -19,8 +19,8 @@ model User {
   emailVerified Boolean @default(false)
   image         String?
 
-  role          Role      @default(CONSUMER)
-  address       String?
+  role    Role    @default(CONSUMER)
+  address String?
 
   sessions Session[]
   accounts Account[]
@@ -31,14 +31,17 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  ordersAsConsumer Order[] @relation("ConsumerOrders")
+  ordersAsFarmer   Order[] @relation("FarmerOrders")
+
   @@unique([email])
   @@map("users")
 }
 
 model ConsumerProfile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   zipCode   String
   state     String
@@ -62,23 +65,23 @@ enum DeliveryOptions {
 }
 
 model FarmerProfile {
-  id              String           @id @default(uuid())
-  userId          String           @unique
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  farmName        String
-  zipCode         String
-  state           String
-  latitude        Float
-  longitude       Float
+  farmName  String
+  zipCode   String
+  state     String
+  latitude  Float
+  longitude Float
 
   deliveryOptions DeliveryOptions
   coverPhotoUrl   String?
   about           String?
   certifications  Json?
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([state])
@@ -138,4 +141,44 @@ model Verification {
 
   @@index([identifier])
   @@map("verifications")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id         String @id @default(uuid())
+  consumerId String
+  farmerId   String
+  consumer   User   @relation("ConsumerOrders", fields: [consumerId], references: [id])
+  farmer     User   @relation("FarmerOrders", fields: [farmerId], references: [id])
+
+  status OrderStatus @default(PENDING)
+  total  Decimal     @db.Decimal(10, 2)
+  items  OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([consumerId, status])
+  @@index([farmerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  name      String
+  unitPrice Decimal @db.Decimal(10, 2)
+  quantity  Int
+
+  @@index([orderId])
+  @@map("order_items")
 }
