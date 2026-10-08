@@ -5,6 +5,7 @@ import { ProfileForm } from '@/features/onbording/onboarding-modal';
 import { auth } from '@/lib/auth/auth';
 import { initials } from '@/lib/format';
 import { prisma } from '@/lib/prisma';
+import Image from 'next/image';
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -28,9 +29,12 @@ export default async function ProfilePage() {
       <div className='mx-auto grid max-w-5xl gap-8 px-6 py-14 lg:grid-cols-[320px_1fr]'>
         <aside className='bg-ink text-cream rounded-3xl p-8 lg:sticky lg:top-24 lg:self-start'>
           {user?.image ? (
-            <img
+            <Image
               src={user.image}
               alt=''
+              width={64}
+              height={64}
+              unoptimized
               className='border-cream/20 h-24 w-24 rounded-full border-4 object-cover'
             />
           ) : (
