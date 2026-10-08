@@ -4,9 +4,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from '../prisma';
 
 export const auth = betterAuth({
-  baseURL: {
-    allowedHosts: ['http://localhost:3000', '*.netlify.app'],
-  },
+  baseURL: { allowedHosts: ['http://localhost:3000', '*.netlify.app'] },
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
   emailAndPassword: { enabled: true },
   socialProviders: {},
