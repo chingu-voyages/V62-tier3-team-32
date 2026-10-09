@@ -31,8 +31,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ordersAsConsumer Order[] @relation("ConsumerOrders")
-  ordersAsFarmer   Order[] @relation("FarmerOrders")
+  ordersAsConsumer Order[]    @relation("ConsumerOrders")
+  ordersAsFarmer   Order[]    @relation("FarmerOrders")
+  offerings        Offering[] @relation("FarmerOfferings")
 
   @@unique([email])
   @@map("users")
@@ -75,10 +76,11 @@ model FarmerProfile {
   latitude  Float
   longitude Float
 
-  deliveryOptions DeliveryOptions
-  coverPhotoUrl   String?
-  about           String?
-  certifications  Json?
+  deliveryOptions  DeliveryOptions
+  coverPhotoUrl    String?
+  about            String?
+  certifications   Json?
+  growingPractices String[]        @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,4 +183,22 @@ model OrderItem {
 
   @@index([orderId])
   @@map("order_items")
+}
+
+model Offering {
+  id       String @id @default(uuid())
+  farmerId String
+  farmer   User   @relation("FarmerOfferings", fields: [farmerId], references: [id], onDelete: Cascade)
+
+  name        String
+  unit        String // "lb", "bunch", "dozen"
+  price       Decimal @db.Decimal(10, 2)
+  quantity    Int     @default(0)
+  isAvailable Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([farmerId, isAvailable])
+  @@map("offerings")
 }

@@ -80,13 +80,13 @@ export function SignupCard({
         setError(signUpError.message ?? 'Signup failed');
         return;
       }
+
+      router.push(role === 'farmer' ? '/farmer/onboarding' : '/onboarding');
     } catch (err: any) {
       setError(err?.message || 'Something went wrong during signup.');
     } finally {
       setIsLoading(false);
     }
-
-    router.push('/onboarding');
   }
 
   // Handle Google OAuth
@@ -96,6 +96,7 @@ export function SignupCard({
     try {
       await authClient.signIn.social({
         provider: 'google',
+        callbackURL: '/onboarding'
       });
     } catch (err: any) {
       setError(err?.message || 'Google signup failed.');
