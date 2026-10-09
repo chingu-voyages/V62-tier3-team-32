@@ -102,7 +102,7 @@ export function LoginForm() {
             size='lg'
             className='w-full rounded-full font-bold'
           >
-            Log in as {role === 'farmer' ? 'farmer' : 'shopper'}
+            Log in as {role === 'farmer' ? 'farmer' : 'consumer'}
           </Button>
         </Field>
         <FieldSeparator className='flex-1'>or continue with</FieldSeparator>
