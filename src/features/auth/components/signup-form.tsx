@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { authClient } from '../../../lib/auth/auth-client';
 
@@ -22,8 +23,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export function SignupCard() {
-  const [role, setRole] = useState('consumer');
+export function SignupCard({
+  defaultRole = 'consumer',
+}: {
+  defaultRole?: 'consumer' | 'farmer';
+}) {
+  const router = useRouter();
+  const [role, setRole] = useState<string>(defaultRole);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,7 +52,7 @@ export function SignupCard() {
 
       // 2. Convert the image file to a Base64 string only if a file was actually chosen
       if (photoFile && photoFile.size > 0) {
-        // Basic client-side check to prevent huge image strings (e.g., limit to 2MB)
+        // Basic client-side check to prevent huge image strings (e.g. limit to 2MB)
         if (photoFile.size > 2 * 1024 * 1024) {
           setError('Image must be smaller than 2MB.');
           setIsLoading(false);
@@ -74,13 +80,13 @@ export function SignupCard() {
         setError(signUpError.message ?? 'Signup failed');
         return;
       }
-
-      // Handle success routing here (e.g., router.push('/dashboard'))
     } catch (err: any) {
       setError(err?.message || 'Something went wrong during signup.');
     } finally {
       setIsLoading(false);
     }
+
+    router.push('/onboarding');
   }
 
   // Handle Google OAuth
