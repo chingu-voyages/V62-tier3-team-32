@@ -31,11 +31,18 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          const role = user.role == 'FARMER' ? 'FARMER' : 'CONSUMER';
+          const role = user.role === 'FARMER' ? 'FARMER' : 'CONSUMER';
           return { data: { ...user, role } };
+        },
+      },
+      update: {
+        before: async (data) => {
+          const { role, ...rest } = data;
+          return { data: rest };
         },
       },
     },
   },
+  
   plugins: [],
 });
