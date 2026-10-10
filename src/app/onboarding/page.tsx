@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma';
 export default async function OnboardingPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect('/signup?role=consumer');
-  if (session.user.role === 'FARMER') redirect('/');
+  if (session.user.role === 'FARMER') redirect('/farmer');
 
   const profile = await prisma.consumerProfile.findUnique({
     where: { userId: session.user.id },
