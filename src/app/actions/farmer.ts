@@ -86,14 +86,13 @@ export async function setOrderStatus(orderId: string, status: NextStatus): Promi
     return { error: "That status change isn't allowed." };
   }
 
-  // Including the current status in `where` makes a double-click or a stale page a no-op
-  const { count } = await prisma.order.updateMany({
-    where: { id: orderId, farmerId: session.user.id, status: order.status },
-    data: { status },
-  });
+const { count } = await prisma.order.updateMany({
+  where: { id: orderId, farmerId: session.user.id, status: order.status },
+  data: { status, ...(status === 'COMPLETED' ? { completedAt: new Date() } : {}) },
+});
   if (count === 0) return { error: 'This order was just updated. Refresh and try again.' };
 
-  revalidatePath('/farmer/orders');
+  revalidatePath('/farmer');
   revalidatePath('/orders'); // the shopper's page shows the new status
   return { success: true };
 }
@@ -125,7 +124,7 @@ export async function saveOffering(input: z.input<typeof offeringSchema>): Promi
     await prisma.offering.create({ data: { ...data, farmerId: session.user.id } });
   }
 
-  revalidatePath('/farmer/offerings');
+  revalidatePath('/farmer');
   return { success: true };
 }
 
@@ -139,7 +138,7 @@ export async function setOfferingAvailability(id: string, isAvailable: boolean):
   });
   if (count === 0) return { error: 'Offering not found.' };
 
-  revalidatePath('/farmer/offerings');
+  revalidatePath('/farmer');
   return { success: true };
 }
 
@@ -148,6 +147,6 @@ export async function deleteOffering(id: string): Promise<Result> {
   if (!session) return { error: 'You need to be signed in as a farmer.' };
 
   await prisma.offering.deleteMany({ where: { id, farmerId: session.user.id } });
-  revalidatePath('/farmer/offerings');
+  revalidatePath('/farmer');
   return { success: true };
 }
