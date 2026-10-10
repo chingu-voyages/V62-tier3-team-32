@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { saveFarmerProfile } from '@/app/actions/farmer';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ import { initials } from '@/lib/format';
 import Image from 'next/image';
 
 type Props = {
-  mode: 'onboarding' | 'edit';
+  isNew: boolean;
   defaults: {
     name: string;
     farmName: string;
@@ -144,13 +144,15 @@ function CheckGroup({
   );
 }
 
-export function FarmerProfileForm({ mode, defaults }: Props) {
+export function FarmerProfileForm({ isNew, defaults }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const otherCerts = defaults.certifications.filter((c) => !CERTIFICATIONS.includes(c));
+  const otherCerts = defaults.certifications.filter(
+    (c) => !CERTIFICATIONS.includes(c)
+  );
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -163,7 +165,10 @@ export function FarmerProfileForm({ mode, defaults }: Props) {
     const farmFile = fd.get('farmPhoto') as File;
 
     try {
-      if ((ownerFile?.size ?? 0) > MAX_BYTES || (farmFile?.size ?? 0) > MAX_BYTES) {
+      if (
+        (ownerFile?.size ?? 0) > MAX_BYTES ||
+        (farmFile?.size ?? 0) > MAX_BYTES
+      ) {
         setError('Each photo must be smaller than 2MB.');
         return;
       }
@@ -194,12 +199,8 @@ export function FarmerProfileForm({ mode, defaults }: Props) {
         return;
       }
 
-      if (mode === 'onboarding') {
-        router.replace('/farmer/orders');
-      } else {
-        router.refresh();
-        setSaved(true);
-      }
+      router.refresh();
+      setSaved(true);
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -214,12 +215,10 @@ export function FarmerProfileForm({ mode, defaults }: Props) {
     <Card className='border-ink/10 w-full rounded-3xl border-2 bg-white'>
       <CardHeader>
         <CardTitle className='font-display text-3xl font-bold'>
-          {mode === 'onboarding' ? 'Set up your farm' : 'Edit your farm details'}
+          {isNew ? 'Finish your farm profile' : 'Edit your farm details'}
         </CardTitle>
         <CardDescription>
-          {mode === 'onboarding'
-            ? 'Shoppers will see this when they browse farms near them.'
-            : 'Changes show up on your farm profile straight away.'}
+          Shoppers see this when they browse farms near them.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -232,34 +231,70 @@ export function FarmerProfileForm({ mode, defaults }: Props) {
             )}
             {saved && (
               <div className='rounded-xl bg-green-100 p-3 text-center text-sm font-medium text-green-800'>
-                Farm profile updated.
+                Farm profile saved.
               </div>
             )}
 
             <Field>
               <FieldLabel htmlFor='name'>Owner name</FieldLabel>
-              <Input id='name' name='name' defaultValue={defaults.name} required disabled={isLoading} className='rounded-xl' />
+              <Input
+                id='name'
+                name='name'
+                defaultValue={defaults.name}
+                required
+                disabled={isLoading}
+                className='rounded-xl'
+              />
             </Field>
 
             <Field>
               <FieldLabel htmlFor='farmName'>Farm name</FieldLabel>
-              <Input id='farmName' name='farmName' defaultValue={defaults.farmName} required disabled={isLoading} className='rounded-xl' />
+              <Input
+                id='farmName'
+                name='farmName'
+                defaultValue={defaults.farmName}
+                required
+                disabled={isLoading}
+                className='rounded-xl'
+              />
             </Field>
 
             <Field>
               <FieldLabel htmlFor='address'>Farm address</FieldLabel>
-              <Input id='address' name='address' defaultValue={defaults.address} placeholder='1 Orchard Rd, Fresno, CA' required disabled={isLoading} className='rounded-xl' />
+              <Input
+                id='address'
+                name='address'
+                defaultValue={defaults.address}
+                placeholder='1 Orchard Rd, Fresno, CA'
+                required
+                disabled={isLoading}
+                className='rounded-xl'
+              />
             </Field>
 
             <Field>
               <FieldLabel htmlFor='zipCode'>ZIP code</FieldLabel>
-              <Input id='zipCode' name='zipCode' defaultValue={defaults.zipCode} inputMode='numeric' placeholder='93701' required disabled={isLoading} className='rounded-xl' />
+              <Input
+                id='zipCode'
+                name='zipCode'
+                defaultValue={defaults.zipCode}
+                inputMode='numeric'
+                placeholder='93701'
+                required
+                disabled={isLoading}
+                className='rounded-xl'
+              />
             </Field>
 
             <fieldset className='space-y-2'>
-              <legend className='mb-1 text-sm font-medium'>Delivery options</legend>
+              <legend className='mb-1 text-sm font-medium'>
+                Delivery options
+              </legend>
               {DELIVERY_OPTIONS.map((o) => (
-                <label key={o.value} className='border-ink/10 flex cursor-pointer items-start gap-3 rounded-xl border-2 p-3'>
+                <label
+                  key={o.value}
+                  className='border-ink/10 flex cursor-pointer items-start gap-3 rounded-xl border-2 p-3'
+                >
                   <input
                     type='radio'
                     name='deliveryOptions'
@@ -270,39 +305,91 @@ export function FarmerProfileForm({ mode, defaults }: Props) {
                     className='accent-brand mt-1 h-4 w-4'
                   />
                   <span>
-                    <span className='block text-sm font-semibold'>{o.label}</span>
-                    <span className='text-muted-foreground block text-xs'>{o.hint}</span>
+                    <span className='block text-sm font-semibold'>
+                      {o.label}
+                    </span>
+                    <span className='text-muted-foreground block text-xs'>
+                      {o.hint}
+                    </span>
                   </span>
                 </label>
               ))}
             </fieldset>
 
             <Field>
-              <FieldLabel htmlFor='about'>About your farm (optional)</FieldLabel>
-              <textarea id='about' name='about' defaultValue={defaults.about} rows={4} maxLength={1000} disabled={isLoading} className={textarea} />
-            </Field>
-
-            <CheckGroup legend='Certifications' name='certification' options={CERTIFICATIONS} selected={defaults.certifications} disabled={isLoading} />
-
-            <Field>
-              <FieldLabel htmlFor='otherCertifications'>Other certifications (separate with commas)</FieldLabel>
-              <Input id='otherCertifications' name='otherCertifications' defaultValue={otherCerts.join(', ')} disabled={isLoading} className='rounded-xl' />
-            </Field>
-
-            <CheckGroup legend='Growing practices' name='practice' options={PRACTICES} selected={defaults.growingPractices} disabled={isLoading} />
-
-            <PhotoField id='ownerPhoto' label='Photo of you (optional)' current={defaults.ownerImage} fallback={initials(defaults.name)} round disabled={isLoading} />
-            <PhotoField id='farmPhoto' label='Photo of your farm (optional)' current={defaults.farmImage} fallback='' disabled={isLoading} />
-
-            <Field>
-              <Button
-                type='submit'
-                size='lg'
+              <FieldLabel htmlFor='about'>
+                About your farm (optional)
+              </FieldLabel>
+              <textarea
+                id='about'
+                name='about'
+                defaultValue={defaults.about}
+                rows={4}
+                maxLength={1000}
                 disabled={isLoading}
-                className='w-full rounded-full font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-0.5'
-              >
-                {isLoading ? 'Saving...' : mode === 'onboarding' ? 'Save and continue' : 'Save changes'}
-              </Button>
+                className={textarea}
+              />
+            </Field>
+
+            <CheckGroup
+              legend='Certifications'
+              name='certification'
+              options={CERTIFICATIONS}
+              selected={defaults.certifications}
+              disabled={isLoading}
+            />
+
+            <Field>
+              <FieldLabel htmlFor='otherCertifications'>
+                Other certifications (separate with commas)
+              </FieldLabel>
+              <Input
+                id='otherCertifications'
+                name='otherCertifications'
+                defaultValue={otherCerts.join(', ')}
+                disabled={isLoading}
+                className='rounded-xl'
+              />
+            </Field>
+
+            <CheckGroup
+              legend='Growing practices'
+              name='practice'
+              options={PRACTICES}
+              selected={defaults.growingPractices}
+              disabled={isLoading}
+            />
+
+            <PhotoField
+              id='ownerPhoto'
+              label='Photo of you (optional)'
+              current={defaults.ownerImage}
+              fallback={initials(defaults.name)}
+              round
+              disabled={isLoading}
+            />
+            <PhotoField
+              id='farmPhoto'
+              label='Photo of your farm (optional)'
+              current={defaults.farmImage}
+              fallback=''
+              disabled={isLoading}
+            />
+            <Field>
+              <div className='flex gap-3'>
+                <Button
+                  type='submit'
+                  size='lg'
+                  disabled={isLoading}
+                  className='w-full rounded-full font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-0.5'
+                >
+                  {isLoading
+                    ? 'Saving...'
+                    : isNew
+                      ? 'Save farm profile'
+                      : 'Save changes'}
+                </Button>
+              </div>
             </Field>
           </FieldGroup>
         </form>

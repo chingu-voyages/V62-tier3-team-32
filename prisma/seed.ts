@@ -1,5 +1,5 @@
-import { randomUUID } from 'node:crypto';
 import { hashPassword } from 'better-auth/crypto';
+import { randomUUID } from 'node:crypto';
 
 import { prisma } from '../src/lib/prisma';
 import { lookupZip } from '../src/lib/zip';
@@ -29,16 +29,45 @@ const farmSeed = {
   zip: '93701',
   farmName: 'Sunsprig Farm',
   deliveryOptions: 'BOTH' as const,
-  about: 'Family-run vegetable farm growing leafy greens and tomatoes on twelve acres.',
+  about:
+    'Family-run vegetable farm growing leafy greens and tomatoes on twelve acres.',
   certifications: ['USDA Organic'],
-  growingPractices: ['No synthetic pesticides', 'Seasonal crops only', 'Cover cropping'],
+  growingPractices: [
+    'No synthetic pesticides',
+    'Seasonal crops only',
+    'Cover cropping',
+  ],
 };
 
 const offeringSeeds = [
-  { name: 'Dark leafy greens', unit: 'bunch', price: 4.5, quantity: 40, isAvailable: true },
-  { name: 'Heirloom tomatoes', unit: 'lb', price: 6, quantity: 25, isAvailable: true },
-  { name: 'Sweet corn', unit: 'ear', price: 0.9, quantity: 0, isAvailable: true }, // out of stock
-  { name: 'Free-range eggs', unit: 'dozen', price: 7, quantity: 12, isAvailable: false }, // hidden
+  {
+    name: 'Dark leafy greens',
+    unit: 'bunch',
+    price: 4.5,
+    quantity: 40,
+    isAvailable: true,
+  },
+  {
+    name: 'Heirloom tomatoes',
+    unit: 'lb',
+    price: 6,
+    quantity: 25,
+    isAvailable: true,
+  },
+  {
+    name: 'Sweet corn',
+    unit: 'ear',
+    price: 0.9,
+    quantity: 0,
+    isAvailable: true,
+  }, // out of stock
+  {
+    name: 'Free-range eggs',
+    unit: 'dozen',
+    price: 7,
+    quantity: 12,
+    isAvailable: false,
+  }, // hidden
 ];
 
 // A second farmer with no FarmerProfile, to test the onboarding gate
@@ -63,10 +92,29 @@ const consumerSeeds: {
     zip: '10001',
     withProfile: true,
     orders: [
-      { status: 'PENDING', daysAgo: 0, items: [{ name: 'Dark leafy greens', price: 4.5, qty: 2 }] },
-      { status: 'READY', daysAgo: 1, items: [{ name: 'Heirloom tomatoes', price: 6, qty: 1 }, { name: 'Basil bunch', price: 2.5, qty: 2 }] },
-      { status: 'COMPLETED', daysAgo: 12, items: [{ name: 'Free-range eggs (dozen)', price: 7, qty: 1 }] },
-      { status: 'CANCELLED', daysAgo: 20, items: [{ name: 'Sweet corn', price: 0.9, qty: 6 }] },
+      {
+        status: 'PENDING',
+        daysAgo: 0,
+        items: [{ name: 'Dark leafy greens', price: 4.5, qty: 2 }],
+      },
+      {
+        status: 'READY',
+        daysAgo: 1,
+        items: [
+          { name: 'Heirloom tomatoes', price: 6, qty: 1 },
+          { name: 'Basil bunch', price: 2.5, qty: 2 },
+        ],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 12,
+        items: [{ name: 'Free-range eggs (dozen)', price: 7, qty: 1 }],
+      },
+      {
+        status: 'CANCELLED',
+        daysAgo: 20,
+        items: [{ name: 'Sweet corn', price: 0.9, qty: 6 }],
+      },
     ],
   },
   {
@@ -92,8 +140,54 @@ const consumerSeeds: {
     zip: '93721',
     withProfile: true,
     orders: [
-      { status: 'PENDING', daysAgo: 0, items: [{ name: 'Heirloom tomatoes', price: 6, qty: 3 }] },
-      { status: 'CONFIRMED', daysAgo: 2, items: [{ name: 'Dark leafy greens', price: 4.5, qty: 4 }] },
+      {
+        status: 'COMPLETED',
+        daysAgo: 2,
+        items: [{ name: 'Heirloom tomatoes', price: 6, qty: 4 }],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 4,
+        items: [
+          { name: 'Dark leafy greens', price: 4.5, qty: 6 },
+          { name: 'Basil bunch', price: 2.5, qty: 3 },
+        ],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 9,
+        items: [{ name: 'Free-range eggs (dozen)', price: 7, qty: 2 }],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 16,
+        items: [{ name: 'Heirloom tomatoes', price: 6, qty: 5 }],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 23,
+        items: [{ name: 'Dark leafy greens', price: 4.5, qty: 8 }],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 38,
+        items: [{ name: 'Sweet corn', price: 0.9, qty: 24 }],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 71,
+        items: [{ name: 'Heirloom tomatoes', price: 6, qty: 7 }],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 130,
+        items: [{ name: 'Dark leafy greens', price: 4.5, qty: 10 }],
+      },
+      {
+        status: 'COMPLETED',
+        daysAgo: 220,
+        items: [{ name: 'Free-range eggs (dozen)', price: 7, qty: 4 }],
+      },
     ], // gives the farmer more pending work, and a shopper near the farm
   },
 ];
@@ -155,7 +249,10 @@ async function seedFarmer() {
   });
 
   // Second farmer: no profile, no offerings
-  const noProfile = await upsertUser({ ...farmerNoProfileSeed, role: 'FARMER' });
+  const noProfile = await upsertUser({
+    ...farmerNoProfileSeed,
+    role: 'FARMER',
+  });
   await prisma.farmerProfile.deleteMany({ where: { userId: noProfile.id } });
   await prisma.offering.deleteMany({ where: { farmerId: noProfile.id } });
 
@@ -186,13 +283,18 @@ async function seedConsumers(farmerId: string) {
     await prisma.order.deleteMany({ where: { consumerId: user.id } });
     for (const o of c.orders) {
       const total = o.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+      const createdAt = new Date(Date.now() - o.daysAgo * 86_400_000);
       await prisma.order.create({
         data: {
           consumerId: user.id,
           farmerId,
           status: o.status,
           total: Math.round(total * 100) / 100,
-          createdAt: new Date(Date.now() - o.daysAgo * 86_400_000),
+          createdAt,
+          completedAt:
+            o.status === 'COMPLETED'
+              ? new Date(createdAt.getTime() + 3 * 3_600_000)
+              : null,
           items: {
             create: o.items.map((i) => ({
               name: i.name,
@@ -209,7 +311,9 @@ async function seedConsumers(farmerId: string) {
 async function main() {
   const farmer = await seedFarmer();
   await seedConsumers(farmer.id);
-  console.log(`Seeded. Log in with any @seed.test email and password: ${DEV_PASSWORD}`);
+  console.log(
+    `Seeded. Log in with any @seed.test email and password: ${DEV_PASSWORD}`
+  );
 }
 
 main()

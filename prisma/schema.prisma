@@ -164,9 +164,11 @@ model Order {
   total  Decimal     @db.Decimal(10, 2)
   items  OrderItem[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
 
+  @@index([farmerId, status, completedAt])
   @@index([consumerId, status])
   @@index([farmerId])
   @@map("orders")

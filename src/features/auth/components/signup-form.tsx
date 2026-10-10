@@ -81,7 +81,7 @@ export function SignupCard({
         return;
       }
 
-      router.push(role === 'farmer' ? '/farmer/onboarding' : '/onboarding');
+      router.push(role === 'farmer' ? '/farmer?tab=profile' : '/onboarding');
     } catch (err: any) {
       setError(err?.message || 'Something went wrong during signup.');
     } finally {
