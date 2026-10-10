@@ -144,7 +144,7 @@ function CheckGroup({
   );
 }
 
-export default function FarmerProfileForm({ isNew, defaults }: Props) {
+export function FarmerProfileForm({ isNew, defaults }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
