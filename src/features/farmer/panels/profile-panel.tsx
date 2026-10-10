@@ -1,4 +1,4 @@
-import FarmerProfileForm from '@/features/farmer/farmer-profile-form';
+import {FarmerProfileForm} from '@/features/farmer/farmer-profile-form';
 import { toStringArray, type DeliveryValue } from '@/features/farmer/constants';
 import {FarmProfileSummary} from '@/features/farmer/farmer-profile-summary';
 import { prisma } from '@/lib/prisma';
