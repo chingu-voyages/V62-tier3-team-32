@@ -50,13 +50,13 @@ export default async function FarmerDashboardPage({
           {!farmName && active !== 'profile' && (
             <div className='bg-accent/30 border-ink/10 mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 p-4'>
               <p className='text-ink text-sm font-semibold'>
-                Shoppers can&apos;t find your farm yet. Finish your profile to get listed.
+                Shoppers can&apos;t find your farm yet. Finish setting up your profile to get listed.
               </p>
               <Link
                 href='/farmer?tab=profile'
                 className='bg-ink text-cream rounded-full px-5 py-2 text-sm font-bold transition-transform hover:-translate-y-0.5'
               >
-                Finish your profile
+                Finish onboarding profile
               </Link>
             </div>
           )}
