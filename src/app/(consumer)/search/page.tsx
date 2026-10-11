@@ -194,7 +194,7 @@ export default async function SearchPage({
             </div>
 
             <div className='mt-8 flex flex-wrap items-center gap-3'>
-              <RadiusFilter value={radius} />
+              <RadiusFilter value={radius} total={farmsWithDistance.length} />
               <span className='bg-ink/5 text-ink/70 inline-flex items-center rounded-full px-4 py-2 text-sm font-bold'>
                 {farmsWithDistance.length} farm
                 {farmsWithDistance.length === 1 ? '' : 's'}

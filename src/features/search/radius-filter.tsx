@@ -19,7 +19,7 @@ export function RadiusFilter({
   total,
 }: {
   value: RadiusValue;
-  total: number;
+  total?: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -51,7 +51,7 @@ export function RadiusFilter({
           aria-hidden
         />
       </label>
-      {total > 0 && (
+      {typeof total === 'number' && total > 0 && (
         <span className='bg-ink/5 text-ink/70 inline-block rounded-full px-3 py-1.5 text-xs font-bold'>
           {total} found
         </span>
