@@ -13,13 +13,16 @@ export default async function ConsumerLayout({
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect('/login');
 
-  if (session.user.role === 'CONSUMER') {
-    const profile = await prisma.consumerProfile.findUnique({
-      where: { userId: session.user.id },
-      select: { id: true },
-    });
-    if (!profile) redirect('/onboarding');
-  }
+  // Farmers don't belong in the consumer area
+  if (session.user.role !== 'CONSUMER') redirect('/farmer');
+
+  // Consumers need a profile before browsing farms
+  const profile = await prisma.consumerProfile.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+
+  if (!profile) redirect('/onboarding');
 
   return <>{children}</>;
 }

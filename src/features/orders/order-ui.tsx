@@ -158,7 +158,7 @@ export function EmptyPending() {
         Browse farms near you and place your first order.
       </p>
       <Link
-        href='/#farms'
+        href='/search'
         className='bg-brand text-cream mt-5 inline-block rounded-full px-6 py-3 font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-0.5'
       >
         Find farms near me
