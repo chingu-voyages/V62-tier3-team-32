@@ -62,6 +62,9 @@ export async function saveFarmerProfile(input: z.input<typeof profileSchema>): P
   });
 
   revalidatePath('/farmer', 'layout');
+  revalidatePath('/farmer-profile');
+  revalidatePath('/farms');
+  revalidatePath('/');
   return { success: true };
 }
 

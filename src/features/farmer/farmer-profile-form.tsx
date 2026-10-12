@@ -149,10 +149,20 @@ export function FarmerProfileForm({ isNew, defaults }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [values, setValues] = useState(() => ({
+    name: defaults.name,
+    farmName: defaults.farmName,
+    address: defaults.address,
+    zipCode: defaults.zipCode,
+    about: defaults.about,
+    otherCertifications: defaults.certifications
+      .filter((certification) => !CERTIFICATIONS.includes(certification))
+      .join(', '),
+  }));
 
-  const otherCerts = defaults.certifications.filter(
-    (c) => !CERTIFICATIONS.includes(c)
-  );
+  function updateValue(field: keyof typeof values, value: string) {
+    setValues((current) => ({ ...current, [field]: value }));
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -240,7 +250,8 @@ export function FarmerProfileForm({ isNew, defaults }: Props) {
               <Input
                 id='name'
                 name='name'
-                defaultValue={defaults.name}
+                value={values.name}
+                onChange={(event) => updateValue('name', event.target.value)}
                 required
                 disabled={isLoading}
                 className='rounded-xl'
@@ -252,7 +263,10 @@ export function FarmerProfileForm({ isNew, defaults }: Props) {
               <Input
                 id='farmName'
                 name='farmName'
-                defaultValue={defaults.farmName}
+                value={values.farmName}
+                onChange={(event) =>
+                  updateValue('farmName', event.target.value)
+                }
                 required
                 disabled={isLoading}
                 className='rounded-xl'
@@ -264,7 +278,8 @@ export function FarmerProfileForm({ isNew, defaults }: Props) {
               <Input
                 id='address'
                 name='address'
-                defaultValue={defaults.address}
+                value={values.address}
+                onChange={(event) => updateValue('address', event.target.value)}
                 placeholder='1 Orchard Rd, Fresno, CA'
                 required
                 disabled={isLoading}
@@ -277,7 +292,8 @@ export function FarmerProfileForm({ isNew, defaults }: Props) {
               <Input
                 id='zipCode'
                 name='zipCode'
-                defaultValue={defaults.zipCode}
+                value={values.zipCode}
+                onChange={(event) => updateValue('zipCode', event.target.value)}
                 inputMode='numeric'
                 placeholder='93701'
                 required
@@ -323,7 +339,8 @@ export function FarmerProfileForm({ isNew, defaults }: Props) {
               <textarea
                 id='about'
                 name='about'
-                defaultValue={defaults.about}
+                value={values.about}
+                onChange={(event) => updateValue('about', event.target.value)}
                 rows={4}
                 maxLength={1000}
                 disabled={isLoading}
@@ -346,7 +363,10 @@ export function FarmerProfileForm({ isNew, defaults }: Props) {
               <Input
                 id='otherCertifications'
                 name='otherCertifications'
-                defaultValue={otherCerts.join(', ')}
+                value={values.otherCertifications}
+                onChange={(event) =>
+                  updateValue('otherCertifications', event.target.value)
+                }
                 disabled={isLoading}
                 className='rounded-xl'
               />
