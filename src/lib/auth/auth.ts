@@ -25,6 +25,17 @@ export const auth = betterAuth({
         defaultValue: 'CONSUMER',
         input: true,
       },
+      disclaimerAccepted: {
+        type: 'boolean',
+        required: true,
+        input: true, // allows it to be sent from the client
+        defaultValue: false,
+      },
+      disclaimerAcceptedAt: {
+        type: 'string',
+        required: false,
+        input: true,
+      },
     },
   },
 
