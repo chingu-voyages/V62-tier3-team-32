@@ -204,6 +204,8 @@ async function upsertUser(input: {
       emailVerified: true,
       address: input.address,
       role: input.role,
+      disclaimerAccepted: true,
+      disclaimerAcceptedAt: new Date()
     },
   });
 
