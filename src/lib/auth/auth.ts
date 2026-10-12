@@ -1,4 +1,4 @@
-import { APIError, betterAuth } from 'better-auth';
+import { APIError, betterAuth, boolean } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
 import { resolveAddress } from '../address';
@@ -26,6 +26,17 @@ export const auth = betterAuth({
         defaultValue: 'CONSUMER',
         input: true,
       },
+      disclaimerAccepted: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+        input: true
+      },
+      disclaimerAcceptedAt: {
+        type: "string",
+        required: false,
+        input: true,
+      }
     },
   },
 
