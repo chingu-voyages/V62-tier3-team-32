@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { prisma } from '../src/lib/prisma';
 import { lookupZip } from '../src/lib/zip';
 import { syncConsumerProfile } from '@/lib/consumer-profile';
+import { time } from 'node:console';
 
 const host = new URL(process.env.DATABASE_URL!).hostname;
 if (!['localhost', '127.0.0.1'].includes(host)) {
@@ -204,6 +205,8 @@ async function upsertUser(input: {
       emailVerified: true,
       address: input.address,
       role: input.role,
+      disclaimerAccepted: true,
+      disclaimerAcceptedAt: new Date()
     },
   });
 
