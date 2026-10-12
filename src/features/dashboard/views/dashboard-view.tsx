@@ -25,7 +25,7 @@ export function DashboardView() {
           </p>
           <div className='mt-8 flex flex-wrap gap-4'>
             <a
-              href='#farms'
+              href='/search'
               className='bg-brand text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
             >
               Find farms near me

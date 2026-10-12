@@ -31,9 +31,9 @@ export function Navbar() {
         </div>
       </Link>
       <div className='nav-actions'>
-        <button type='button' className='search-button'>
+        <Link href='/search' className='search-button'>
           Search
-        </button>
+        </Link>
         {session ? (
           <button
             type='button'
