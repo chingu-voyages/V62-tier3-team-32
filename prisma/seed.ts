@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 
 import { prisma } from '../src/lib/prisma';
 import { lookupZip } from '../src/lib/zip';
+import { syncConsumerProfile } from '@/lib/consumer-profile';
 
 const host = new URL(process.env.DATABASE_URL!).hostname;
 if (!['localhost', '127.0.0.1'].includes(host)) {
@@ -81,15 +82,13 @@ const consumerSeeds: {
   name: string;
   email: string;
   address: string;
-  zip: string;
   withProfile: boolean;
   orders: SeedOrder[];
 }[] = [
   {
     name: 'Ava Martinez',
     email: 'ava@seed.test',
-    address: '350 5th Ave, New York, NY',
-    zip: '10001',
+    address: '350 5th Ave, New York, NY 10001',
     withProfile: true,
     orders: [
       {
@@ -121,7 +120,6 @@ const consumerSeeds: {
     name: 'Ben Carter',
     email: 'ben@seed.test',
     address: '233 S Wacker Dr, Chicago, IL',
-    zip: '60606',
     withProfile: true,
     orders: [], // profile but no orders: empty states
   },
@@ -129,7 +127,6 @@ const consumerSeeds: {
     name: 'Cara Nguyen',
     email: 'cara@seed.test',
     address: '500 Congress Ave, Austin, TX',
-    zip: '78701',
     withProfile: false, // no profile: consumer onboarding gate
     orders: [],
   },
@@ -137,7 +134,6 @@ const consumerSeeds: {
     name: 'Dev Patel',
     email: 'dev@seed.test',
     address: '1 Market St, Fresno, CA',
-    zip: '93721',
     withProfile: true,
     orders: [
       {
@@ -208,6 +204,8 @@ async function upsertUser(input: {
       emailVerified: true,
       address: input.address,
       role: input.role,
+      disclaimerAccepted: true,
+      disclaimerAcceptedAt: new Date()
     },
   });
 
@@ -268,17 +266,12 @@ async function seedConsumers(farmerId: string) {
       role: 'CONSUMER',
     });
 
-    if (c.withProfile) {
-      const location = lookupZip(c.zip);
-      if (!location) throw new Error(`Unknown ZIP in seed data: ${c.zip}`);
-      await prisma.consumerProfile.upsert({
-        where: { userId: user.id },
-        create: { userId: user.id, ...location },
-        update: location,
-      });
-    } else {
-      await prisma.consumerProfile.deleteMany({ where: { userId: user.id } });
-    }
+if (c.withProfile) {
+  const synced = await syncConsumerProfile(user.id, c.address);
+  if (!synced.ok) throw new Error(`Bad seed address "${c.address}": ${synced.error}`);
+} else {
+  await prisma.consumerProfile.deleteMany({ where: { userId: user.id } });
+}
 
     await prisma.order.deleteMany({ where: { consumerId: user.id } });
     for (const o of c.orders) {

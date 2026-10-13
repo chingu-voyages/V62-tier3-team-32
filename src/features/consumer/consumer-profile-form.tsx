@@ -17,21 +17,27 @@ import { Input } from '@/components/ui/input';
 import { initials } from '@/lib/format';
 
 type Props = {
-  mode: 'onboarding' | 'edit';
+  isNew: boolean;
   defaults: {
     name: string;
     address: string;
-    zipCode: string;
     image: string | null;
   };
 };
 
-export function ProfileForm({ mode, defaults }: Props) {
+export function ConsumerProfileForm({ isNew, defaults }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState<string | null>(defaults.image);
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
+    setPreview(URL.createObjectURL(file));
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -61,7 +67,6 @@ export function ProfileForm({ mode, defaults }: Props) {
       const result = await saveConsumerProfile({
         name: formData.get('name') as string,
         address: formData.get('address') as string,
-        zipCode: formData.get('zipCode') as string,
         image,
       });
 
@@ -70,12 +75,8 @@ export function ProfileForm({ mode, defaults }: Props) {
         return;
       }
 
-      if (mode === 'onboarding') {
-        router.replace('/orders');
-      } else {
-        router.refresh(); // re-fetch server data so the new values show everywhere
-        setSaved(true);
-      }
+      router.refresh();
+      setSaved(true);
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -83,22 +84,15 @@ export function ProfileForm({ mode, defaults }: Props) {
     }
   }
 
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
-    setPreview(URL.createObjectURL(file));
-  }
-
   return (
     <Card className='border-ink/10 w-full rounded-3xl border-2 bg-white'>
-      <CardHeader className='text-center'>
+      <CardHeader>
         <CardTitle className='font-display text-3xl font-bold'>
-          {mode === 'onboarding' ? 'Complete your profile' : 'Edit your details'}
+          {isNew ? 'Finish setting up your profile' : 'Edit your profile info'}
         </CardTitle>
         <CardDescription>
-          {mode === 'onboarding'
-            ? 'Tell us a bit about yourself to get started.'
+          {isNew
+            ? 'Add your address so we can show you farms near you.'
             : 'Keep your information up to date.'}
         </CardDescription>
       </CardHeader>
@@ -112,12 +106,12 @@ export function ProfileForm({ mode, defaults }: Props) {
             )}
             {saved && (
               <div className='rounded-xl bg-green-100 p-3 text-center text-sm font-medium text-green-800'>
-                Profile updated.
+                Profile saved.
               </div>
             )}
 
             <Field>
-              <FieldLabel htmlFor='name'>Full Name</FieldLabel>
+              <FieldLabel htmlFor='name'>Full name</FieldLabel>
               <Input
                 id='name'
                 name='name'
@@ -129,30 +123,21 @@ export function ProfileForm({ mode, defaults }: Props) {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor='address'>Physical Address</FieldLabel>
+              <FieldLabel htmlFor='address'>Physical address</FieldLabel>
               <Input
                 id='address'
                 name='address'
                 defaultValue={defaults.address}
-                placeholder='123 Main St, City'
+                placeholder='123 Main St, Fresno, CA 93721'
                 required
                 disabled={isLoading}
                 className='rounded-xl'
               />
-            </Field>
 
-            <Field>
-              <FieldLabel htmlFor='zipCode'>ZIP Code</FieldLabel>
-              <Input
-                id='zipCode'
-                name='zipCode'
-                defaultValue={defaults.zipCode}
-                inputMode='numeric'
-                placeholder='90210'
-                required
-                disabled={isLoading}
-                className='rounded-xl'
-              />
+              <p className='text-muted-foreground text-xs'>
+                Street, city, state and ZIP code. We use it to find farms near
+                you.
+              </p>
             </Field>
 
             <Field>
@@ -193,8 +178,8 @@ export function ProfileForm({ mode, defaults }: Props) {
               >
                 {isLoading
                   ? 'Saving...'
-                  : mode === 'onboarding'
-                    ? 'Continue'
+                  : isNew
+                    ? 'Save profile'
                     : 'Save changes'}
               </Button>
             </Field>

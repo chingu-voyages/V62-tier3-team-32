@@ -1,6 +1,8 @@
-import { betterAuth } from 'better-auth';
+import { APIError, betterAuth, boolean } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
+import { resolveAddress } from '../address';
+import { syncConsumerProfile } from '../consumer-profile';
 import { prisma } from '../prisma';
 
 export const auth = betterAuth({
@@ -22,22 +24,57 @@ export const auth = betterAuth({
         type: 'string',
         required: false,
         defaultValue: 'CONSUMER',
+        input: true,
+      },
+      disclaimerAccepted: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
         input: true
+      },
+      disclaimerAcceptedAt: {
+        type: "string",
+        required: false,
+        input: true,
       }
-    }
+    },
   },
 
   databaseHooks: {
     user: {
       create: {
         before: async (user) => {
-          const role = user.role === 'FARMER' ? 'FARMER' : 'CONSUMER';
+          const role = user.role == 'FARMER' ? 'FARMER' : 'CONSUMER';
+
+          if (typeof user.address === 'string' && user.address.trim()) {
+            const result = resolveAddress(user.address);
+            if (!result.ok)
+              throw new APIError('BAD_REQUEST', { message: result.error });
+            return { data: { ...user, role, address: result.value.formatted } };
+          }
           return { data: { ...user, role } };
+        },
+
+        after: async (user) => {
+          if (user.role !== 'CONSUMER' || typeof user.address !== 'string')
+            return;
+          try {
+            await syncConsumerProfile(user.id, user.address);
+          } catch {
+            // Not fatal: the dashboard recreates the profile from the saved address
+          }
         },
       },
       update: {
         before: async (data) => {
           const { role, ...rest } = data;
+
+          if (typeof rest.address === 'string') {
+            const result = resolveAddress(rest.address);
+            if (!result.ok)
+              throw new APIError('BAD_REQUEST', { message: result.error });
+            rest.address = result.value.formatted;
+          }
           return { data: rest };
         },
       },
