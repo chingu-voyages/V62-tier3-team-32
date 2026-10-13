@@ -35,6 +35,9 @@ model User {
   ordersAsFarmer   Order[]    @relation("FarmerOrders")
   offerings        Offering[] @relation("FarmerOfferings")
 
+  disclaimerAccepted   Boolean   @default(false)
+  disclaimerAcceptedAt DateTime?
+
   @@unique([email])
   @@map("users")
 }
