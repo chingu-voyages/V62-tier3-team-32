@@ -1,6 +1,6 @@
+import { MapPin, ShoppingBag, Truck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Truck, ShoppingBag } from 'lucide-react';
 
 import { formatDistance } from '@/lib/distance';
 import { money } from '@/lib/format';

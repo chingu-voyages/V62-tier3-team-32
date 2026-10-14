@@ -44,32 +44,74 @@ function AddOfferingForm() {
   }
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className='border-ink/10 rounded-3xl border-2 bg-white p-6'>
-      <h2 className='font-display text-ink text-2xl font-semibold'>Add an offering</h2>
+    <form
+      ref={formRef}
+      onSubmit={onSubmit}
+      className='border-ink/10 rounded-3xl border-2 bg-white p-6'
+    >
+      <h2 className='font-display text-ink text-2xl font-semibold'>
+        Add an offering
+      </h2>
       <div className='mt-4 grid gap-3 sm:grid-cols-[2fr_1fr_1fr_1fr]'>
         <label className='text-sm font-medium'>
           Name
-          <Input name='name' required placeholder='Heirloom tomatoes' disabled={isPending} className='mt-1 rounded-xl' />
+          <Input
+            name='name'
+            required
+            placeholder='Heirloom tomatoes'
+            disabled={isPending}
+            className='mt-1 rounded-xl'
+          />
         </label>
         <label className='text-sm font-medium'>
           Unit
-          <Input name='unit' required placeholder='lb' disabled={isPending} className='mt-1 rounded-xl' />
+          <Input
+            name='unit'
+            required
+            placeholder='lb'
+            disabled={isPending}
+            className='mt-1 rounded-xl'
+          />
         </label>
         <label className='text-sm font-medium'>
           Price ($)
-          <Input name='price' type='number' step='0.01' min='0.01' required disabled={isPending} className='mt-1 rounded-xl' />
+          <Input
+            name='price'
+            type='number'
+            step='0.01'
+            min='0.01'
+            required
+            disabled={isPending}
+            className='mt-1 rounded-xl'
+          />
         </label>
         <label className='text-sm font-medium'>
           In stock
-          <Input name='quantity' type='number' min='0' step='1' required defaultValue='0' disabled={isPending} className='mt-1 rounded-xl' />
+          <Input
+            name='quantity'
+            type='number'
+            min='0'
+            step='1'
+            required
+            defaultValue='0'
+            disabled={isPending}
+            className='mt-1 rounded-xl'
+          />
         </label>
       </div>
       {error && (
-        <p role='alert' className='text-destructive bg-destructive/10 mt-3 rounded-xl p-3 text-sm font-medium'>
+        <p
+          role='alert'
+          className='text-destructive bg-destructive/10 mt-3 rounded-xl p-3 text-sm font-medium'
+        >
           {error}
         </p>
       )}
-      <button type='submit' disabled={isPending} className={`${primaryBtn} mt-4`}>
+      <button
+        type='submit'
+        disabled={isPending}
+        className={`${primaryBtn} mt-4`}
+      >
         {isPending ? 'Adding...' : 'Add offering'}
       </button>
     </form>
@@ -82,7 +124,8 @@ function OfferingRow({ offering }: { offering: OfferingView }) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const dirty = Number(price) !== offering.price || Number(quantity) !== offering.quantity;
+  const dirty =
+    Number(price) !== offering.price || Number(quantity) !== offering.quantity;
 
   function run(fn: () => Promise<{ error: string } | { success: true }>) {
     setError(null);
@@ -93,13 +136,17 @@ function OfferingRow({ offering }: { offering: OfferingView }) {
   }
 
   return (
-    <li className={`border-ink/10 rounded-2xl border-2 bg-white p-4 ${offering.isAvailable ? '' : 'opacity-70'}`}>
+    <li
+      className={`border-ink/10 rounded-2xl border-2 bg-white p-4 ${offering.isAvailable ? '' : 'opacity-70'}`}
+    >
       <div className='flex flex-wrap items-center justify-between gap-3'>
         <div>
           <p className='text-ink font-semibold'>{offering.name}</p>
           <p className='text-ink/60 text-sm'>
             per {offering.unit}
-            {offering.isAvailable && offering.quantity === 0 ? ' (out of stock)' : ''}
+            {offering.isAvailable && offering.quantity === 0
+              ? ' (out of stock)'
+              : ''}
           </p>
         </div>
 
@@ -141,7 +188,7 @@ function OfferingRow({ offering }: { offering: OfferingView }) {
                     price: Number(price),
                     quantity: Number(quantity),
                     isAvailable: offering.isAvailable,
-                  }),
+                  })
                 )
               }
               className={primaryBtn}
@@ -157,9 +204,15 @@ function OfferingRow({ offering }: { offering: OfferingView }) {
           type='button'
           disabled={isPending}
           aria-pressed={offering.isAvailable}
-          onClick={() => run(() => setOfferingAvailability(offering.id, !offering.isAvailable))}
+          onClick={() =>
+            run(() =>
+              setOfferingAvailability(offering.id, !offering.isAvailable)
+            )
+          }
           className={`rounded-full px-4 py-1.5 text-sm font-bold transition-colors disabled:opacity-50 ${
-            offering.isAvailable ? 'bg-brand/15 text-brand hover:bg-brand/25' : 'bg-ink/10 text-ink/70 hover:bg-ink/20'
+            offering.isAvailable
+              ? 'bg-brand/15 text-brand hover:bg-brand/25'
+              : 'bg-ink/10 text-ink/70 hover:bg-ink/20'
           }`}
         >
           {offering.isAvailable ? 'Available now' : 'Hidden from shoppers'}
@@ -168,7 +221,8 @@ function OfferingRow({ offering }: { offering: OfferingView }) {
           type='button'
           disabled={isPending}
           onClick={() => {
-            if (window.confirm(`Delete "${offering.name}"?`)) run(() => deleteOffering(offering.id));
+            if (window.confirm(`Delete "${offering.name}"?`))
+              run(() => deleteOffering(offering.id));
           }}
           className='text-coral hover:bg-coral/10 rounded-full px-4 py-1.5 text-sm font-bold transition-colors disabled:opacity-50'
         >
@@ -191,13 +245,20 @@ export function OfferingsManager({ offerings }: { offerings: OfferingView[] }) {
       <AddOfferingForm />
       {offerings.length === 0 ? (
         <div className='border-ink/20 rounded-3xl border-2 border-dashed p-8 text-center'>
-          <p className='font-display text-ink text-2xl font-semibold'>Nothing listed yet.</p>
-          <p className='text-ink/60 mt-1'>Add what you have today so shoppers can see it.</p>
+          <p className='font-display text-ink text-2xl font-semibold'>
+            Nothing listed yet.
+          </p>
+          <p className='text-ink/60 mt-1'>
+            Add what you have today so shoppers can see it.
+          </p>
         </div>
       ) : (
         <ul className='space-y-3'>
           {offerings.map((o) => (
-            <OfferingRow key={`${o.id}-${o.price}-${o.quantity}`} offering={o} />
+            <OfferingRow
+              key={`${o.id}-${o.price}-${o.quantity}`}
+              offering={o}
+            />
           ))}
         </ul>
       )}

@@ -42,10 +42,14 @@ export async function OrdersPanel({ farmerId }: { farmerId: string }) {
       </p>
 
       <section className='mt-8'>
-        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>Pending</h2>
+        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>
+          Pending
+        </h2>
         {pending.length === 0 ? (
           <div className='border-ink/20 rounded-3xl border-2 border-dashed p-8 text-center'>
-            <p className='text-ink/60'>New orders from shoppers will appear here.</p>
+            <p className='text-ink/60'>
+              New orders from shoppers will appear here.
+            </p>
           </div>
         ) : (
           <div className='space-y-5'>
@@ -57,9 +61,13 @@ export async function OrdersPanel({ farmerId }: { farmerId: string }) {
       </section>
 
       <section className='mt-10'>
-        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>Fulfilled</h2>
+        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>
+          Fulfilled
+        </h2>
         {fulfilled.length === 0 ? (
-          <p className='text-ink/60'>Completed and cancelled orders will show up here.</p>
+          <p className='text-ink/60'>
+            Completed and cancelled orders will show up here.
+          </p>
         ) : (
           <>
             <div className='space-y-3'>

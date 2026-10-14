@@ -11,13 +11,22 @@ export function ConsumerProfileSummary({ user, location }: Props) {
   return (
     <aside className='bg-ink text-cream h-fit rounded-3xl p-8'>
       {user.image ? (
-        <img src={user.image} alt='' className='border-cream/20 h-24 w-24 rounded-full border-4 object-cover' />
+        <img
+          src={user.image}
+          alt=''
+          className='border-cream/20 h-24 w-24 rounded-full border-4 object-cover'
+        />
       ) : (
-        <span aria-hidden className='bg-accent text-ink font-display grid h-24 w-24 place-items-center rounded-full text-3xl font-bold'>
+        <span
+          aria-hidden
+          className='bg-accent text-ink font-display grid h-24 w-24 place-items-center rounded-full text-3xl font-bold'
+        >
           {initials(user.name)}
         </span>
       )}
-      <h2 className='font-display mt-5 text-3xl leading-tight font-bold'>{user.name}</h2>
+      <h2 className='font-display mt-5 text-3xl leading-tight font-bold'>
+        {user.name}
+      </h2>
 
       {location ? (
         <dl className='mt-6 space-y-4 text-sm'>
@@ -34,8 +43,8 @@ export function ConsumerProfileSummary({ user, location }: Props) {
         </dl>
       ) : (
         <p className='text-cream/80 mt-4 text-sm leading-relaxed'>
-          Not set up yet. Add your ZIP code in the form so we can find farms near you. Your orders
-          still work in the meantime.
+          Not set up yet. Add your ZIP code in the form so we can find farms
+          near you. Your orders still work in the meantime.
         </p>
       )}
 

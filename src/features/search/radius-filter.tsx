@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type RadiusValue = 25 | 50 | 100 | 150 | 200 | 'all';
 

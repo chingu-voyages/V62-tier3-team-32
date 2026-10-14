@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { ClipboardList, UserRound, type LucideIcon } from 'lucide-react';
+import Link from 'next/link';
 
 import { initials } from '@/lib/format';
 
@@ -18,7 +18,13 @@ type Props = {
   location: string | null; // "93721, CA", or null until the profile is saved
 };
 
-export function ConsumerSidebar({ active, pendingCount, name, image, location }: Props) {
+export function ConsumerSidebar({
+  active,
+  pendingCount,
+  name,
+  image,
+  location,
+}: Props) {
   const complete = location !== null;
 
   return (
@@ -26,14 +32,23 @@ export function ConsumerSidebar({ active, pendingCount, name, image, location }:
       {/* Identity card: desktop only */}
       <div className='border-ink/10 mb-4 hidden items-center gap-3 rounded-3xl border-2 bg-white p-4 lg:flex'>
         {image ? (
-          <img src={image} alt='' className='h-12 w-12 shrink-0 rounded-full object-cover' />
+          <img
+            src={image}
+            alt=''
+            className='h-12 w-12 shrink-0 rounded-full object-cover'
+          />
         ) : (
-          <span aria-hidden className='bg-accent text-ink font-display grid h-12 w-12 shrink-0 place-items-center rounded-full text-lg font-bold'>
+          <span
+            aria-hidden
+            className='bg-accent text-ink font-display grid h-12 w-12 shrink-0 place-items-center rounded-full text-lg font-bold'
+          >
             {initials(name)}
           </span>
         )}
         <div className='min-w-0'>
-          <p className='font-display text-ink truncate text-lg leading-tight font-semibold'>{name}</p>
+          <p className='font-display text-ink truncate text-lg leading-tight font-semibold'>
+            {name}
+          </p>
           <span
             className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${
               complete ? 'bg-brand/15 text-brand' : 'bg-coral/15 text-coral'
@@ -44,7 +59,10 @@ export function ConsumerSidebar({ active, pendingCount, name, image, location }:
         </div>
       </div>
 
-      <nav aria-label='Dashboard sections' className='-mx-6 overflow-x-auto px-6 lg:mx-0 lg:overflow-visible lg:px-0'>
+      <nav
+        aria-label='Dashboard sections'
+        className='-mx-6 overflow-x-auto px-6 lg:mx-0 lg:overflow-visible lg:px-0'
+      >
         <ul className='flex gap-2 pb-1 lg:flex-col lg:gap-1.5 lg:pb-0'>
           {TABS.map(({ id, label, icon: Icon }) => {
             const isActive = id === active;
@@ -71,7 +89,10 @@ export function ConsumerSidebar({ active, pendingCount, name, image, location }:
                   )}
                   {id === 'profile' && !complete && (
                     <>
-                      <span aria-hidden className='bg-coral ml-1 h-2 w-2 rounded-full lg:ml-auto' />
+                      <span
+                        aria-hidden
+                        className='bg-coral ml-1 h-2 w-2 rounded-full lg:ml-auto'
+                      />
                       <span className='sr-only'>(incomplete)</span>
                     </>
                   )}

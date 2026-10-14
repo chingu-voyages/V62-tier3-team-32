@@ -3,14 +3,21 @@
 import { useState, useTransition } from 'react';
 
 import { setOrderStatus } from '@/app/actions/farmer';
-import { FarmerOrderView, ItemLines, OrderProgress, type OrderView } from '@/features/orders/order-ui';
+import {
+  FarmerOrderView,
+  ItemLines,
+  OrderProgress,
+} from '@/features/orders/order-ui';
 import { money, shortDate } from '@/lib/format';
 
 type NextStatus = 'CONFIRMED' | 'READY' | 'COMPLETED' | 'CANCELLED';
 
 const ACTIONS: Record<
   string,
-  { primary: { label: string; status: NextStatus }; secondary: { label: string; status: NextStatus } }
+  {
+    primary: { label: string; status: NextStatus };
+    secondary: { label: string; status: NextStatus };
+  }
 > = {
   PENDING: {
     primary: { label: 'Confirm order', status: 'CONFIRMED' },
@@ -32,7 +39,12 @@ export function FarmerOrderCard({ order }: { order: FarmerOrderView }) {
   const actions = ACTIONS[order.status];
 
   function change(status: NextStatus) {
-    if (status === 'CANCELLED' && !window.confirm('Cancel this order? The shopper will see it as cancelled.')) {
+    if (
+      status === 'CANCELLED' &&
+      !window.confirm(
+        'Cancel this order? The shopper will see it as cancelled.'
+      )
+    ) {
       return;
     }
     setError(null);
@@ -46,10 +58,16 @@ export function FarmerOrderCard({ order }: { order: FarmerOrderView }) {
     <article className='border-ink/10 rounded-3xl border-2 bg-white p-6 shadow-[4px_4px_0_rgba(33,48,28,0.15)]'>
       <div className='flex items-start justify-between gap-4'>
         <div>
-          <h3 className='font-display text-ink text-2xl font-semibold'>{order.consumerName}</h3>
-          <p className='text-ink/60 text-sm'>Ordered {shortDate(order.createdAt)}</p>
+          <h3 className='font-display text-ink text-2xl font-semibold'>
+            {order.consumerName}
+          </h3>
+          <p className='text-ink/60 text-sm'>
+            Ordered {shortDate(order.createdAt)}
+          </p>
         </div>
-        <p className='font-display text-ink text-2xl font-semibold'>{money(order.total)}</p>
+        <p className='font-display text-ink text-2xl font-semibold'>
+          {money(order.total)}
+        </p>
       </div>
 
       <OrderProgress status={order.status} />
@@ -59,7 +77,10 @@ export function FarmerOrderCard({ order }: { order: FarmerOrderView }) {
       </div>
 
       {error && (
-        <p role='alert' className='text-destructive bg-destructive/10 mt-4 rounded-xl p-3 text-sm font-medium'>
+        <p
+          role='alert'
+          className='text-destructive bg-destructive/10 mt-4 rounded-xl p-3 text-sm font-medium'
+        >
           {error}
         </p>
       )}

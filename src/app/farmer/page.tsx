@@ -1,10 +1,16 @@
 import Link from 'next/link';
 
-import { FarmerSidebar, type FarmerTab } from '@/features/farmer/farmer-sidebar';
+import {
+  FarmerSidebar,
+  type FarmerTab,
+} from '@/features/farmer/farmer-sidebar';
 import { OfferingsPanel } from '@/features/farmer/panels/offerings-panel';
 import { OrdersPanel } from '@/features/farmer/panels/orders-panel';
 import { ProfilePanel } from '@/features/farmer/panels/profile-panel';
-import { RevenuePanel, type RangeId } from '@/features/farmer/panels/revenue-panel';
+import {
+  RevenuePanel,
+  type RangeId,
+} from '@/features/farmer/panels/revenue-panel';
 import { prisma } from '@/lib/prisma';
 import { requireFarmer } from '@/lib/session';
 
@@ -20,13 +26,21 @@ export default async function FarmerDashboardPage({
   const farmerId = session.user.id;
 
   const params = await searchParams;
-  const active: FarmerTab = TABS.includes(params.tab as FarmerTab) ? (params.tab as FarmerTab) : 'orders';
-  const range: RangeId = RANGES.includes(params.range as RangeId) ? (params.range as RangeId) : '30d';
+  const active: FarmerTab = TABS.includes(params.tab as FarmerTab)
+    ? (params.tab as FarmerTab)
+    : 'orders';
+  const range: RangeId = RANGES.includes(params.range as RangeId)
+    ? (params.range as RangeId)
+    : '30d';
 
   const [user, pendingCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: farmerId },
-      select: { name: true, image: true, farmerProfile: { select: { farmName: true } } },
+      select: {
+        name: true,
+        image: true,
+        farmerProfile: { select: { farmName: true } },
+      },
     }),
     prisma.order.count({
       where: { farmerId, status: { in: ['PENDING', 'CONFIRMED', 'READY'] } },
@@ -50,7 +64,8 @@ export default async function FarmerDashboardPage({
           {!farmName && active !== 'profile' && (
             <div className='bg-accent/30 border-ink/10 mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 p-4'>
               <p className='text-ink text-sm font-semibold'>
-                Shoppers can&apos;t find your farm yet. Finish setting up your profile to get listed.
+                Shoppers can&apos;t find your farm yet. Finish setting up your
+                profile to get listed.
               </p>
               <Link
                 href='/farmer?tab=profile'
@@ -63,7 +78,9 @@ export default async function FarmerDashboardPage({
 
           {active === 'orders' && <OrdersPanel farmerId={farmerId} />}
           {active === 'offerings' && <OfferingsPanel farmerId={farmerId} />}
-          {active === 'revenue' && <RevenuePanel farmerId={farmerId} range={range} />}
+          {active === 'revenue' && (
+            <RevenuePanel farmerId={farmerId} range={range} />
+          )}
           {active === 'profile' && <ProfilePanel farmerId={farmerId} />}
         </div>
       </main>

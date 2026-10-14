@@ -2,6 +2,7 @@ import { hashPassword } from 'better-auth/crypto';
 import { randomUUID } from 'node:crypto';
 
 import { syncConsumerProfile } from '@/lib/consumer-profile';
+import { OfferingCategory } from '@generated/prisma/enums';
 import { prisma } from '../src/lib/prisma';
 import { lookupZip } from '../src/lib/zip';
 
@@ -43,6 +44,7 @@ const farmSeed = {
 const offeringSeeds = [
   {
     name: 'Dark leafy greens',
+    category: OfferingCategory.PRODUCE,
     unit: 'bunch',
     price: 4.5,
     quantity: 40,
@@ -50,6 +52,7 @@ const offeringSeeds = [
   },
   {
     name: 'Heirloom tomatoes',
+    category: OfferingCategory.PRODUCE,
     unit: 'lb',
     price: 6,
     quantity: 25,
@@ -57,6 +60,7 @@ const offeringSeeds = [
   },
   {
     name: 'Sweet corn',
+    category: OfferingCategory.PRODUCE,
     unit: 'ear',
     price: 0.9,
     quantity: 0,
@@ -64,6 +68,7 @@ const offeringSeeds = [
   }, // out of stock
   {
     name: 'Free-range eggs',
+    category: OfferingCategory.PROTEIN,
     unit: 'dozen',
     price: 7,
     quantity: 12,

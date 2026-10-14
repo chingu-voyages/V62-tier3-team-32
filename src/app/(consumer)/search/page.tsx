@@ -1,12 +1,12 @@
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/prisma';
-import { distanceInMiles } from '@/lib/distance';
 import { FarmCard } from '@/features/search/farm-card';
 import { RadiusFilter } from '@/features/search/radius-filter';
+import { auth } from '@/lib/auth/auth';
+import { distanceInMiles } from '@/lib/distance';
+import { prisma } from '@/lib/prisma';
 
 export const metadata = {
   title: 'Farms near you | RootSource',

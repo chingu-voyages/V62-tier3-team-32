@@ -1,7 +1,7 @@
 'use server';
 
-import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
 import { z } from 'zod';
 
 import { resolveAddress } from '@/lib/address';
@@ -19,13 +19,17 @@ const schema = z.object({
 
 type Result = { error: string } | { success: true };
 
-export async function saveConsumerProfile(input: z.input<typeof schema>): Promise<Result> {
+export async function saveConsumerProfile(
+  input: z.input<typeof schema>
+): Promise<Result> {
   const session = await getConsumerSession();
   if (!session) return { error: 'You need to be signed in as a shopper.' };
 
   const parsed = schema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Please check your details.' };
+    return {
+      error: parsed.error.issues[0]?.message ?? 'Please check your details.',
+    };
   }
   const { name, address, image } = parsed.data;
 
@@ -35,7 +39,11 @@ export async function saveConsumerProfile(input: z.input<typeof schema>): Promis
 
   await auth.api.updateUser({
     headers: await headers(),
-    body: { name, address: resolved.value.formatted, ...(image ? { image } : {}) },
+    body: {
+      name,
+      address: resolved.value.formatted,
+      ...(image ? { image } : {}),
+    },
   });
 
   await syncConsumerProfile(session.user.id, resolved.value.formatted);

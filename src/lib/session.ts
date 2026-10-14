@@ -15,7 +15,6 @@ export async function getFarmerSession() {
   return session?.user.role === 'FARMER' ? session : null;
 }
 
-
 export async function requireConsumer() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect('/login');

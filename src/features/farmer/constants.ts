@@ -19,13 +19,23 @@ export const PRACTICES = [
 ];
 
 export const DELIVERY_OPTIONS = [
-  { value: 'PICKUP', label: 'Pickup only', hint: 'Customers collect from your farm.' },
-  { value: 'DELIVERY', label: 'Delivery only', hint: 'You bring orders to customers.' },
+  {
+    value: 'PICKUP',
+    label: 'Pickup only',
+    hint: 'Customers collect from your farm.',
+  },
+  {
+    value: 'DELIVERY',
+    label: 'Delivery only',
+    hint: 'You bring orders to customers.',
+  },
   { value: 'BOTH', label: 'Pickup and delivery', hint: 'Customers choose.' },
 ] as const;
 
 export type DeliveryValue = (typeof DELIVERY_OPTIONS)[number]['value'];
 
 export function toStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : [];
+  return Array.isArray(value)
+    ? value.filter((v): v is string => typeof v === 'string')
+    : [];
 }

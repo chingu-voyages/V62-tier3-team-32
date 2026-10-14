@@ -51,7 +51,8 @@ export function UserLoginCard() {
       }
 
       // The account's stored role decides where they land
-      const destination = data?.user.role === 'FARMER' ? '/farmer' : '/consumer';
+      const destination =
+        data?.user.role === 'FARMER' ? '/farmer' : '/consumer';
       router.replace(destination);
       router.refresh(); // make server components re-read the new session
     } catch {
@@ -78,7 +79,9 @@ export function UserLoginCard() {
   return (
     <Card className='mx-auto w-full max-w-md rounded-3xl border-2'>
       <CardHeader className='text-center'>
-        <CardTitle className='font-display text-3xl font-bold'>Log in</CardTitle>
+        <CardTitle className='font-display text-3xl font-bold'>
+          Log in
+        </CardTitle>
         <CardDescription>Welcome back to RootSource.</CardDescription>
       </CardHeader>
       <CardContent className='space-y-5'>
@@ -163,7 +166,10 @@ export function UserLoginCard() {
       </CardContent>
       <CardFooter className='text-muted-foreground justify-center text-sm'>
         New to RootSource?&nbsp;
-        <Link href='/signup' className='text-primary font-semibold hover:underline'>
+        <Link
+          href='/signup'
+          className='text-primary font-semibold hover:underline'
+        >
           Create an account
         </Link>
       </CardFooter>

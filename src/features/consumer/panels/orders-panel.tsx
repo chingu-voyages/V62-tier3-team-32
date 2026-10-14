@@ -12,7 +12,7 @@ const HISTORY_LIMIT = 10;
 export async function OrdersPanel({
   consumerId,
   firstName,
-  zipCode
+  zipCode,
 }: {
   consumerId: string;
   firstName: string;
@@ -22,7 +22,9 @@ export async function OrdersPanel({
     where: { consumerId },
     include: {
       items: true,
-      farmer: { select: { name: true, farmerProfile: { select: { farmName: true } } } },
+      farmer: {
+        select: { name: true, farmerProfile: { select: { farmName: true } } },
+      },
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -57,7 +59,9 @@ export async function OrdersPanel({
       <p className='text-ink/70 mt-2 text-lg'>{summary}</p>
 
       <section className='mt-8'>
-        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>Pending</h2>
+        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>
+          Pending
+        </h2>
         {pending.length === 0 ? (
           <EmptyPending />
         ) : (
@@ -70,9 +74,13 @@ export async function OrdersPanel({
       </section>
 
       <section className='mt-10'>
-        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>Past</h2>
+        <h2 className='font-display text-ink mb-3 text-2xl font-semibold'>
+          Past
+        </h2>
         {past.length === 0 ? (
-          <p className='text-ink/60'>Completed and cancelled orders will show up here.</p>
+          <p className='text-ink/60'>
+            Completed and cancelled orders will show up here.
+          </p>
         ) : (
           <>
             <div className='space-y-3'>

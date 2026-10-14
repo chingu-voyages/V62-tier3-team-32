@@ -1,5 +1,11 @@
+import {
+  ClipboardList,
+  Sprout,
+  Store,
+  TrendingUp,
+  type LucideIcon,
+} from 'lucide-react';
 import Link from 'next/link';
-import { ClipboardList, Sprout, Store, TrendingUp, type LucideIcon } from 'lucide-react';
 
 import { initials } from '@/lib/format';
 
@@ -20,16 +26,29 @@ type Props = {
   farmName: string | null;
 };
 
-export function FarmerSidebar({ active, pendingCount, ownerName, ownerImage, farmName }: Props) {
+export function FarmerSidebar({
+  active,
+  pendingCount,
+  ownerName,
+  ownerImage,
+  farmName,
+}: Props) {
   const listed = farmName !== null;
 
   return (
     <aside className='h-fit lg:sticky lg:top-24'>
       <div className='border-ink/10 mb-4 hidden items-center gap-3 rounded-3xl border-2 bg-white p-4 lg:flex'>
         {ownerImage ? (
-          <img src={ownerImage} alt='' className='h-12 w-12 shrink-0 rounded-full object-cover' />
+          <img
+            src={ownerImage}
+            alt=''
+            className='h-12 w-12 shrink-0 rounded-full object-cover'
+          />
         ) : (
-          <span aria-hidden className='bg-accent text-ink font-display grid h-12 w-12 shrink-0 place-items-center rounded-full text-lg font-bold'>
+          <span
+            aria-hidden
+            className='bg-accent text-ink font-display grid h-12 w-12 shrink-0 place-items-center rounded-full text-lg font-bold'
+          >
             {initials(ownerName)}
           </span>
         )}
@@ -47,7 +66,10 @@ export function FarmerSidebar({ active, pendingCount, ownerName, ownerImage, far
         </div>
       </div>
 
-      <nav aria-label='Dashboard sections' className='-mx-6 overflow-x-auto px-6 lg:mx-0 lg:overflow-visible lg:px-0'>
+      <nav
+        aria-label='Dashboard sections'
+        className='-mx-6 overflow-x-auto px-6 lg:mx-0 lg:overflow-visible lg:px-0'
+      >
         <ul className='flex gap-2 pb-1 lg:flex-col lg:gap-1.5 lg:pb-0'>
           {TABS.map(({ id, label, icon: Icon }) => {
             const isActive = id === active;
@@ -74,7 +96,10 @@ export function FarmerSidebar({ active, pendingCount, ownerName, ownerImage, far
                   )}
                   {id === 'profile' && !listed && (
                     <>
-                      <span aria-hidden className='bg-coral ml-1 h-2 w-2 rounded-full lg:ml-auto' />
+                      <span
+                        aria-hidden
+                        className='bg-coral ml-1 h-2 w-2 rounded-full lg:ml-auto'
+                      />
                       <span className='sr-only'>(incomplete)</span>
                     </>
                   )}

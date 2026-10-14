@@ -1,11 +1,20 @@
-import type { PublicFarmerProfile } from '@/app/farmer-profile/page';
-import farmerPhoto from '@/assets/farm-sunsprig3.png';
-import farmHero from '@/assets/farm-sunsprig4.png';
-import { toStringArray } from '@/features/farmer/constants';
-import { OfferingCategory } from '@generated/prisma/enums';
 import { ArrowLeft, Check, Mail, Sprout } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import type { PublicFarmerProfile } from '@/app/farmer-profile/page';
+import farmerPhoto from '@/assets/farm-sunsprig3.png';
+import farmHero from '@/assets/farm-sunsprig4.png';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { toStringArray } from '@/features/farmer/constants';
+import { DeliveryOptions, OfferingCategory } from '@generated/prisma/enums';
 import styles from './farmerProfile.module.css';
 
 const currency = new Intl.NumberFormat('en-US', {
@@ -20,6 +29,27 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
   const pickup = farm.deliveryOptions !== 'DELIVERY';
   const delivery = farm.deliveryOptions !== 'PICKUP';
   const emailHref = `mailto:${user.email}`;
+  const deliveryOptions = (farm.deliveryOptions === 'DELIVERY' && [
+    {
+      label: 'Delivery',
+      value: DeliveryOptions.DELIVERY,
+    },
+  ]) ||
+    (farm.deliveryOptions === 'PICKUP' && [
+      {
+        label: 'Pickup',
+        value: DeliveryOptions.PICKUP,
+      },
+    ]) || [
+      {
+        label: 'Delivery',
+        value: DeliveryOptions.DELIVERY,
+      },
+      {
+        label: 'Pickup',
+        value: DeliveryOptions.PICKUP,
+      },
+    ];
 
   return (
     <div className={styles.profile}>
@@ -99,29 +129,58 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
                   {user.offerings.map((item) => {
                     const available = item.isAvailable && item.quantity > 0;
                     return (
-                      <li key={item.id}>
-                        <div>
-                          <h3>{item.name}</h3>
-                          {/* Category Listing */}
-                          {item.category === OfferingCategory.PRODUCE && (
-                            <p>Produce</p>
-                          )}
-                          {item.category === OfferingCategory.PROTEIN && (
-                            <p>Protein</p>
-                          )}
-                          {item.category === OfferingCategory.OTHER && (
-                            <p>Other</p>
-                          )}
-                          <p>
-                            {currency.format(Number(item.price))} / {item.unit}
-                          </p>
-                          {available && <p>{item.quantity} available</p>}
+                      <li
+                        key={item.id}
+                        className='flex! h-full! flex-col! items-stretch! justify-between!'
+                      >
+                        <div className='flex items-start justify-between gap-3'>
+                          <div className='min-w-0'>
+                            <h3>{item.name}</h3>
+                            {/* Category Listing */}
+                            {item.category === OfferingCategory.PRODUCE && (
+                              <p>Produce</p>
+                            )}
+                            {item.category === OfferingCategory.PROTEIN && (
+                              <p>Protein</p>
+                            )}
+                            {item.category === OfferingCategory.OTHER && (
+                              <p>Other</p>
+                            )}
+                            <p>
+                              {currency.format(Number(item.price))} /{' '}
+                              {item.unit}
+                            </p>
+                            {available && <p>{item.quantity} available</p>}
+                          </div>
+                          <span
+                            className={available ? styles.today : styles.soon}
+                          >
+                            {available ? 'Available' : 'Unavailable'}
+                          </span>
                         </div>
-                        <span
-                          className={available ? styles.today : styles.soon}
-                        >
-                          {available ? 'Available' : 'Unavailable'}
-                        </span>
+                        <Select items={deliveryOptions} disabled={!available}>
+                          <SelectTrigger className='min-h-10 w-full rounded-xl border-[#c9d0bd] bg-white font-semibold text-[#203323] shadow-sm hover:bg-[#f8faf5] focus-visible:border-[#008532] focus-visible:ring-[#008532]/30'>
+                            <SelectValue
+                              placeholder={
+                                available
+                                  ? 'Select Delivery Option'
+                                  : 'Out of Stock'
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {deliveryOptions.map((deliveryOption) => (
+                                <SelectItem
+                                  key={deliveryOption.label}
+                                  value={deliveryOption.value}
+                                >
+                                  {deliveryOption.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </li>
                     );
                   })}
