@@ -87,9 +87,7 @@ export function SignupCard({
         return;
       }
 
-      router.push(
-        role === 'farmer' ? '/farmer?tab=profile' : '/consumer?tab=profile'
-      );
+      router.push(role === 'farmer' ? '/farmer?tab=profile' : '/consumer?tab=profile');
     } catch (err: any) {
       setError(err?.message || 'Something went wrong during signup.');
     } finally {

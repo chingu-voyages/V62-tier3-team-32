@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 
-import heroFarm from '@/assets/hero-farm.jpg'; 
+import heroFarm from '@/assets/hero-farm.jpg';
 import { SignupCard } from '../components/signup-form';
 
 export function SignupView() {
@@ -13,8 +13,8 @@ export function SignupView() {
           Join the local <span className='text-primary'>market</span> today.
         </h1>
         <p className='text-muted-foreground mt-4 max-w-md text-lg'>
-          Connect with trusted growers near you, secure ultra-fresh produce, 
-          and support sustainable community food systems.
+          Connect with trusted growers near you, secure ultra-fresh produce, and
+          support sustainable community food systems.
         </p>
         <Image
           src={heroFarm}

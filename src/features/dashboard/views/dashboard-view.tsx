@@ -1,10 +1,27 @@
 import Image from 'next/image';
+import { FarmCard } from './farm-card';
 
 import heroFarm from '@/assets/hero-farm.jpg';
 import recallGreens from '@/assets/recall-greens.jpg';
-import { farms } from '../data/farms';
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+import { connection } from 'next/server';
 
-export function DashboardView() {
+export async function DashboardView() {
+  await connection();
+  const farms = await prisma.farmerProfile.findMany({
+    where: { user: { role: 'FARMER' } },
+    select: {
+      userId: true,
+      farmName: true,
+      coverPhotoUrl: true,
+      state: true,
+      zipCode: true,
+      certifications: true,
+    },
+    orderBy: [{ farmName: 'asc' }, { userId: 'asc' }],
+    take: 3,
+  });
   return (
     <div className='bg-cream w-full'>
       {/* HERO */}
@@ -25,7 +42,7 @@ export function DashboardView() {
           </p>
           <div className='mt-8 flex flex-wrap gap-4'>
             <a
-              href='#farms'
+              href='/search'
               className='bg-brand text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
             >
               Find farms near me
@@ -141,54 +158,29 @@ export function DashboardView() {
           <div className='flex flex-wrap items-end justify-between gap-4'>
             <div>
               <h2 className='font-display text-ink text-4xl font-bold lg:text-5xl'>
-                Farms near you
+                Meet our farmers
               </h2>
               <p className='text-ink/60 mt-2'>
                 Real profiles, real practices, real produce.
               </p>
             </div>
-            <a
-              href='#'
+            <Link
+              href='/farms'
               className='bg-brand/10 text-brand hover:bg-brand/20 rounded-full px-6 py-3 font-bold transition-colors'
             >
               View all farms →
-            </a>
+            </Link>
           </div>
+          {farms.length === 0 && (
+            <p className='text-ink/60 mt-8'>No farms are listed yet.</p>
+          )}
           <div className='mt-10 grid gap-6 md:grid-cols-3'>
             {farms.map((farm) => (
-              <div
-                key={farm.name}
-                className='border-ink/10 rounded-3xl border-2 bg-white p-6 transition-transform hover:-translate-y-1'
-              >
-                <Image
-                  src={farm.image}
-                  alt={farm.imageAlt}
-                  width={1024}
-                  height={768}
-                  loading='lazy'
-                  className='border-ink/10 mb-5 aspect-4/3 w-full rounded-2xl border object-cover'
-                />
-                <span
-                  className={`inline-block rounded-full px-3 py-1 text-xs font-bold tracking-wider uppercase ${farm.badgeClass}`}
-                >
-                  {farm.badge}
-                </span>
-                <h3 className='font-display text-ink mt-3 text-2xl font-semibold'>
-                  {farm.name}
-                </h3>
-                <p className='text-ink/60 mt-1 text-sm'>{farm.meta}</p>
-                <a
-                  href={farm.href ?? '#'}
-                  className='bg-accent text-ink mt-5 inline-block w-full rounded-full px-5 py-3 text-center font-bold shadow-[3px_3px_0_rgba(33,48,28,0.25)] transition-transform hover:-translate-y-0.5'
-                >
-                  {farm.action}
-                </a>
-              </div>
+              <FarmCard key={farm.userId} farm={farm} />
             ))}
           </div>
         </div>
       </section>
-
       {/* CTA */}
       <section id='join' className='bg-brand w-full scroll-mt-24'>
         <div className='mx-auto max-w-4xl px-6 py-16 text-center'>

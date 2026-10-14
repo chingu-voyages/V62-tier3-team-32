@@ -1,112 +1,74 @@
-import farmProduce from '@/assets/farm-sunsprig2.png';
-import farmer from '@/assets/farm-sunsprig3.png';
+import type { PublicFarmerProfile } from '@/app/farmer-profile/page';
+import farmerPhoto from '@/assets/farm-sunsprig3.png';
 import farmHero from '@/assets/farm-sunsprig4.png';
-import greenhouse from '@/assets/farm-sunsprig5.png';
-import {
-  ArrowLeft,
-  Check,
-  Droplet,
-  Flower2,
-  Leaf,
-  Mail,
-  Phone,
-  RotateCw,
-  Sprout,
-} from 'lucide-react';
+import { toStringArray } from '@/features/farmer/constants';
+import { ArrowLeft, Check, Mail, Sprout } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { certifications, farmContact, harvest } from '../data/farmerProfile';
 import styles from './farmerProfile.module.css';
 
-const practices = [
-  {
-    title: 'No-till soil beds',
-    icon: Sprout,
-    description:
-      'Beds are never plowed. Permanent soil structure keeps carbon in the ground and microbes feeding the roots.',
-  },
-  {
-    title: 'Cover cropping & compost',
-    icon: RotateCw,
-    description:
-      'Every field rests under clover and rye between plantings, plus on-farm compost instead of synthetic fertilizer.',
-  },
-  {
-    title: 'Drip irrigation',
-    icon: Droplet,
-    description:
-      'Water goes straight to the root zone from a spring-fed pond — no overhead spraying, no waste.',
-  },
-  {
-    title: 'Pollinator hedgerows',
-    icon: Flower2,
-    description:
-      'Native wildflower strips border every field, giving bees and beneficial insects a year-round home.',
-  },
-  {
-    title: 'Year-round hoop house',
-    icon: Leaf,
-    description:
-      'A heated hoop house keeps greens growing through the winter, so the stand never goes empty.',
-  },
-];
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
-function FarmContactLinks() {
-  return (
-    <div className={styles.contactLinks}>
-      <a href={farmContact.phoneHref}>
-        <Phone size={16} aria-hidden='true' />
-        {farmContact.phone}
-      </a>
-      <a href={`mailto:${farmContact.email}`}>
-        <Mail size={16} aria-hidden='true' />
-        {farmContact.email}
-      </a>
-    </div>
-  );
-}
+export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
+  const { user } = farm;
+  const certifications = [...new Set(toStringArray(farm.certifications))];
+  const practices = [...new Set(farm.growingPractices)];
+  const pickup = farm.deliveryOptions !== 'DELIVERY';
+  const delivery = farm.deliveryOptions !== 'PICKUP';
+  const emailHref = `mailto:${user.email}`;
 
-export function FarmerProfileView() {
   return (
     <div className={styles.profile}>
       <div className={styles.container}>
         <Link href='/#farms' className={styles.backLink}>
-          <ArrowLeft size={16} aria-hidden='true' />
-          Back to all farms
+          <ArrowLeft size={16} aria-hidden='true' /> Back to all farms
         </Link>
-        <Image
-          src={farmHero}
-          alt='Rows of vegetables beside a red barn at Sunsprig Farm at sunset'
-          className={styles.hero}
-          sizes='(max-width: 1152px) 100vw, 1104px'
-          preload
-        />
+        {
+          <Image
+            src={farm.coverPhotoUrl || farmHero}
+            alt={`${farm.farmName} farm photo`}
+            width={1104}
+            height={420}
+            className={styles.hero}
+            sizes='(max-width: 1152px) 100vw, 1104px'
+            unoptimized
+            preload
+          />
+        }
         <section className={styles.intro} aria-labelledby='farm-name'>
           <div>
-            <span className={styles.organic}>Certified organic</span>
-            <h1 id='farm-name'>Sunsprig Farm</h1>
+            {certifications.length > 0 && (
+              <span className={styles.organic}>{certifications[0]}</span>
+            )}
+            <h1 id='farm-name'>{farm.farmName}</h1>
             <p className={styles.meta}>
-              4.9 <span aria-label='out of 5 stars'>★</span> · 2.1 mi · No-till,
-              regenerative
+              {farm.state} {farm.zipCode}
             </p>
             <p className={styles.summary}>
-              No-till vegetables, pasture eggs, and small-batch honey from
-              Millbrook.
+              {farm.about ||
+                'This farmer has not added a farm description yet.'}
             </p>
           </div>
           <div className={styles.actions}>
-            <a
-              className={styles.button}
-              href={`mailto:${farmContact.email}?subject=Pickup%20order%20inquiry`}
-            >
-              Order pickup
-            </a>
-            <a
-              className={`${styles.button} ${styles.delivery}`}
-              href={`mailto:${farmContact.email}?subject=Delivery%20order%20inquiry`}
-            >
-              Order delivery
-            </a>
+            {pickup && (
+              <a
+                className={styles.button}
+                href={`${emailHref}?subject=Pickup%20order%20inquiry`}
+              >
+                Ask about pickup
+              </a>
+            )}
+            {delivery && (
+              <a
+                className={`${styles.button} ${styles.delivery}`}
+                href={`${emailHref}?subject=Delivery%20order%20inquiry`}
+              >
+                Ask about delivery
+              </a>
+            )}
             <a
               className={`${styles.button} ${styles.outline}`}
               href='#farm-contact'
@@ -115,96 +77,83 @@ export function FarmerProfileView() {
             </a>
           </div>
         </section>
-
         <div className={styles.columns}>
           <div className={styles.stack}>
             <section className={styles.card} aria-labelledby='about-farm'>
               <h2 id='about-farm'>About the farm</h2>
               <p>
-                Sunsprig is a 12-acre family farm in the rolling hills of
-                Millbrook. Maya and her small crew grow over 40 varieties of
-                vegetables without synthetic pesticides or fertilizers, keeping
-                living soil beds that feed the next season&apos;s harvest.
-                Everything sold here is picked at dawn and on the stand the same
-                day.
+                {farm.about ||
+                  'This farmer has not added a farm description yet.'}
               </p>
-              <figure className={styles.gallery}>
-                <div>
-                  <Image
-                    src={farmProduce}
-                    alt='Fresh tomatoes, squash, and zucchini on the farm stand'
-                    sizes='(max-width: 600px) 90vw, (max-width: 900px) 45vw, 322px'
-                  />
-                  <Image
-                    src={greenhouse}
-                    alt='Tomatoes and leafy greens growing inside the hoop house'
-                    sizes='(max-width: 600px) 90vw, (max-width: 900px) 45vw, 322px'
-                  />
-                </div>
-                <figcaption>
-                  Today&apos;s harvest on the stand · Inside the hoop house
-                </figcaption>
-              </figure>
             </section>
-
             <section className={styles.card} aria-labelledby='harvest-title'>
               <h2 id='harvest-title'>What&apos;s on the stand right now</h2>
-              <ul className={styles.harvest}>
-                {harvest.map((item) => (
-                  <li key={item.name}>
-                    <div>
-                      <h3>{item.name}</h3>
-                      <p>{item.detail}</p>
-                    </div>
-                    <span
-                      className={item.available ? styles.today : styles.soon}
-                    >
-                      {item.available ? 'Today' : 'Soon'}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {user.offerings.length === 0 ? (
+                <p>
+                  No offerings listed yet. Contact the farmer for current
+                  availability.
+                </p>
+              ) : (
+                <ul className={styles.harvest}>
+                  {user.offerings.map((item) => {
+                    const available = item.isAvailable && item.quantity > 0;
+                    return (
+                      <li key={item.id}>
+                        <div>
+                          <h3>{item.name}</h3>
+                          <p>
+                            {currency.format(Number(item.price))} / {item.unit}
+                          </p>
+                          {available && <p>{item.quantity} available</p>}
+                        </div>
+                        <span
+                          className={available ? styles.today : styles.soon}
+                        >
+                          {available ? 'Available' : 'Unavailable'}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </section>
-
             <section className={styles.card} aria-labelledby='growing-title'>
               <h2 id='growing-title'>How we grow</h2>
-              <div className={styles.practices}>
-                {practices.map(({ title, icon: Icon, description }) => (
-                  <article key={title}>
-                    <span className={styles.practiceIcon}>
-                      <Icon size={21} aria-hidden='true' />
-                    </span>
-                    <h3>{title}</h3>
-                    <p>{description}</p>
-                  </article>
-                ))}
-              </div>
+              {practices.length === 0 ? (
+                <p>No growing practices listed yet.</p>
+              ) : (
+                <div className={styles.practices}>
+                  {practices.map((practice) => (
+                    <article key={practice}>
+                      <span className={styles.practiceIcon}>
+                        <Sprout size={21} aria-hidden='true' />
+                      </span>
+                      <h3>{practice}</h3>
+                    </article>
+                  ))}
+                </div>
+              )}
             </section>
-
             <section className={styles.card} aria-labelledby='farmer-title'>
-              <h2 id='farmer-title'>Where your food comes from</h2>
+              <h2 id='farmer-title'>Meet your farmer</h2>
               <div className={styles.farmer}>
-                <Image
-                  src={farmer}
-                  alt='Maya Ellison holding a crate of freshly harvested vegetables'
-                  sizes='160px'
-                />
+                {
+                  <Image
+                    src={user.image || farmerPhoto}
+                    alt={user.name}
+                    width={160}
+                    height={160}
+                    sizes='160px'
+                    unoptimized
+                  />
+                }
                 <div>
-                  <h3>Maya Ellison</h3>
-                  <p className={styles.role}>Owner &amp; Head Grower</p>
-                  <p>
-                    Everything on our stand is grown on our own 12 acres —
-                    vegetables from our fields and hoop house, eggs from the
-                    laying flock that rotationally grazes behind the barn, and
-                    honey from the hives along the north hedgerow. Nothing is
-                    resold or bought in from other growers, so we can answer for
-                    every item on the table.
-                  </p>
+                  <h3>{user.name}</h3>
+                  <p className={styles.role}>Farm owner</p>
                 </div>
               </div>
             </section>
           </div>
-
           <aside className={styles.stack} aria-label='Farm information'>
             <section
               className={`${styles.card} ${styles.sideCard}`}
@@ -214,33 +163,22 @@ export function FarmerProfileView() {
               <dl className={styles.details}>
                 <div>
                   <dt>Owner</dt>
-                  <dd>Maya Ellison</dd>
-                </div>
-                <div>
-                  <dt>Farming here since</dt>
-                  <dd>2014</dd>
-                </div>
-                <div>
-                  <dt>Size</dt>
-                  <dd>12 acres</dd>
+                  <dd>{user.name}</dd>
                 </div>
                 <div>
                   <dt>Address</dt>
-                  <dd>
-                    482 Hollow Ridge Road
-                    <br />
-                    Millbrook, NY 12545
-                  </dd>
+                  <dd>{user.address || 'Address not listed'}</dd>
                 </div>
                 <div>
-                  <dt>Stand hours</dt>
-                  <dd>Tue–Sat · 9:00am–5:00pm</dd>
+                  <dt>Location</dt>
+                  <dd>
+                    {farm.state} {farm.zipCode}
+                  </dd>
                 </div>
               </dl>
               <div className={styles.tags}>
-                <span>Pickup</span>
-                <span>Delivery</span>
-                <span>2.1 mi away</span>
+                {pickup && <span>Pickup</span>}
+                {delivery && <span>Delivery</span>}
               </div>
             </section>
             <section
@@ -248,19 +186,22 @@ export function FarmerProfileView() {
               aria-labelledby='certifications-title'
             >
               <h2 id='certifications-title'>Certifications</h2>
-              <ul className={styles.certifications}>
-                {certifications.map((item) => (
-                  <li key={item.name}>
-                    <span className={styles.check}>
-                      <Check size={21} aria-hidden='true' />
-                    </span>
-                    <div>
-                      <h3>{item.name}</h3>
-                      <p>{item.detail}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              {certifications.length === 0 ? (
+                <p>No certifications listed.</p>
+              ) : (
+                <ul className={styles.certifications}>
+                  {certifications.map((certification) => (
+                    <li key={certification}>
+                      <span className={styles.check}>
+                        <Check size={21} aria-hidden='true' />
+                      </span>
+                      <div>
+                        <h3>{certification}</h3>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
             <section
               id='farm-contact'
@@ -269,30 +210,27 @@ export function FarmerProfileView() {
             >
               <h2 id='contact-title'>Say hello</h2>
               <p>
-                Questions about this week&apos;s harvest? The farm answers
-                fastest by email.
+                Questions about this week&apos;s harvest? Contact {user.name} by
+                email.
               </p>
-              <FarmContactLinks />
+              <div className={styles.contactLinks}>
+                <a href={emailHref}>
+                  <Mail size={16} aria-hidden='true' />
+                  {user.email}
+                </a>
+              </div>
             </section>
           </aside>
         </div>
       </div>
-
       <section className={styles.cta} aria-labelledby='meet-title'>
         <h2 id='meet-title'>Meet your farmer.</h2>
         <p>
-          Stop by the stand, or reach Maya Ellison directly — pickup and
-          delivery are both available this week.
+          Reach {user.name} to ask about current offerings at {farm.farmName}.
         </p>
         <div className={styles.actions}>
-          <a className={styles.button} href={`mailto:${farmContact.email}`}>
+          <a className={styles.button} href={emailHref}>
             Email the farm
-          </a>
-          <a
-            className={`${styles.button} ${styles.call}`}
-            href={farmContact.phoneHref}
-          >
-            Call {farmContact.phone}
           </a>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import { APIError, betterAuth } from 'better-auth';
+import { APIError, betterAuth, boolean } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
 import { resolveAddress } from '../address';
@@ -6,6 +6,7 @@ import { syncConsumerProfile } from '../consumer-profile';
 import { prisma } from '../prisma';
 
 export const auth = betterAuth({
+  baseURL: { allowedHosts: ['http://localhost:3000', '*.netlify.app'] },
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
   emailAndPassword: { enabled: true },
   socialProviders: {},
@@ -79,5 +80,6 @@ export const auth = betterAuth({
       },
     },
   },
+  
   plugins: [],
 });

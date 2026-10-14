@@ -81,7 +81,8 @@ export default function FooterTeam() {
         ))}
       </ul>
       <div className='footer-actions'>
-        <a target='_blank'
+        <a
+          target='_blank'
           rel='noopener noreferrer'
           href='https://github.com/chingu-voyages/V62-tier3-team-32'
           className='github-link'

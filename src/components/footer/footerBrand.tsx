@@ -13,12 +13,12 @@ export default function FooterBrand() {
         />
         <span>RootSource</span>
       </div>
-      <p className='footer-copyright'>
-        © 2026 RootSource · Voyage team 32 · Built for US.
-      </p>
       <p className='footer-copy'>
         Local farms, live harvests, and recall protection — all in your
         neighborhood.
+      </p>
+      <p className='footer-copyright'>
+        © 2026 RootSource · Voyage team 32 · Built for US.
       </p>
     </div>
   );
