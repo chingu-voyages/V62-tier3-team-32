@@ -2,6 +2,7 @@ import type { PublicFarmerProfile } from '@/app/farmer-profile/page';
 import farmerPhoto from '@/assets/farm-sunsprig3.png';
 import farmHero from '@/assets/farm-sunsprig4.png';
 import { toStringArray } from '@/features/farmer/constants';
+import { OfferingCategory } from '@generated/prisma/enums';
 import { ArrowLeft, Check, Mail, Sprout } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -101,6 +102,16 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
                       <li key={item.id}>
                         <div>
                           <h3>{item.name}</h3>
+                          {/* Category Listing */}
+                          {item.category === OfferingCategory.PRODUCE && (
+                            <p>Produce</p>
+                          )}
+                          {item.category === OfferingCategory.PROTEIN && (
+                            <p>Protein</p>
+                          )}
+                          {item.category === OfferingCategory.OTHER && (
+                            <p>Other</p>
+                          )}
                           <p>
                             {currency.format(Number(item.price))} / {item.unit}
                           </p>

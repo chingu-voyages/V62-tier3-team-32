@@ -1,9 +1,9 @@
 import { hashPassword } from 'better-auth/crypto';
 import { randomUUID } from 'node:crypto';
 
+import { syncConsumerProfile } from '@/lib/consumer-profile';
 import { prisma } from '../src/lib/prisma';
 import { lookupZip } from '../src/lib/zip';
-import { syncConsumerProfile } from '@/lib/consumer-profile';
 
 const host = new URL(process.env.DATABASE_URL!).hostname;
 if (!['localhost', '127.0.0.1'].includes(host)) {
@@ -205,7 +205,7 @@ async function upsertUser(input: {
       address: input.address,
       role: input.role,
       disclaimerAccepted: true,
-      disclaimerAcceptedAt: new Date()
+      disclaimerAcceptedAt: new Date(),
     },
   });
 
@@ -266,12 +266,13 @@ async function seedConsumers(farmerId: string) {
       role: 'CONSUMER',
     });
 
-if (c.withProfile) {
-  const synced = await syncConsumerProfile(user.id, c.address);
-  if (!synced.ok) throw new Error(`Bad seed address "${c.address}": ${synced.error}`);
-} else {
-  await prisma.consumerProfile.deleteMany({ where: { userId: user.id } });
-}
+    if (c.withProfile) {
+      const synced = await syncConsumerProfile(user.id, c.address);
+      if (!synced.ok)
+        throw new Error(`Bad seed address "${c.address}": ${synced.error}`);
+    } else {
+      await prisma.consumerProfile.deleteMany({ where: { userId: user.id } });
+    }
 
     await prisma.order.deleteMany({ where: { consumerId: user.id } });
     for (const o of c.orders) {

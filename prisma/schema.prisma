@@ -197,14 +197,21 @@ model Offering {
   farmer   User   @relation("FarmerOfferings", fields: [farmerId], references: [id], onDelete: Cascade)
 
   name        String
+  category    OfferingCategory @default(OTHER)
   unit        String // "lb", "bunch", "dozen"
-  price       Decimal @db.Decimal(10, 2)
-  quantity    Int     @default(0)
-  isAvailable Boolean @default(true)
+  price       Decimal          @db.Decimal(10, 2)
+  quantity    Int              @default(0)
+  isAvailable Boolean          @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([farmerId, isAvailable])
   @@map("offerings")
+}
+
+enum OfferingCategory {
+  PROTEIN
+  PRODUCE
+  OTHER
 }
