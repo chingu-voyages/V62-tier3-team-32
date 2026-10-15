@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 export function SignupCard({
   defaultRole = 'consumer',
@@ -32,10 +34,12 @@ export function SignupCard({
   const [role, setRole] = useState<string>(defaultRole);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   // Handle traditional email & password sign up
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!disclaimerAccepted) return;
     setIsLoading(true);
     setError(null);
 
@@ -74,6 +78,8 @@ export function SignupCard({
         address,
         role: role.toUpperCase(),
         image: base64Image,
+        disclaimerAccepted: true,
+        disclaimerAcceptedAt: new Date().toISOString(),
       });
 
       if (signUpError) {
@@ -93,6 +99,7 @@ export function SignupCard({
 
   // Handle Google OAuth
   async function handleGoogleSignUp() {
+    if (!disclaimerAccepted) return;
     setIsLoading(true);
     setError(null);
     try {
@@ -170,7 +177,7 @@ export function SignupCard({
                 id='address'
                 name='address'
                 type='text'
-                placeholder='123 Main St, City'
+                placeholder='1 Market St, Fresno, CA 93721'
                 required
                 disabled={isLoading}
                 className='rounded-xl'
@@ -200,6 +207,64 @@ export function SignupCard({
                 disabled={isLoading}
                 className='file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer rounded-xl file:mr-4 file:rounded-full file:border-0 file:px-3 file:py-1 file:text-xs file:font-semibold'
               />
+            </Field>
+
+            {/* ── DISCLAIMER ─────────────────────────────────────── */}
+            <Field>
+              <div className='bg-muted/40 max-h-48 space-y-3 overflow-y-auto rounded-xl border p-4 text-sm leading-relaxed'>
+                <p className='font-medium'>
+                  By checking this box, you agree that RootSource is a
+                  farm-to-consumer discovery platform and does not inspect,
+                  certify, prepare, or guarantee the safety of any food, farm,
+                  or listing on this platform. You acknowledge that:
+                </p>
+                <ul className='list-disc space-y-2 pl-5'>
+                  <li>
+                    You are connecting directly with independent local farms and
+                    food producers entirely at your own risk.
+                  </li>
+                  <li>
+                    It is your sole responsibility to inspect all food upon
+                    pickup or delivery for freshness, proper temperature, odor,
+                    packaging integrity, and appearance before consuming it.
+                  </li>
+                  <li>
+                    RootSource does not verify farm certifications, growing
+                    practices, or ownership claims beyond what is self-reported
+                    by the farm. You are responsible for conducting your own due
+                    diligence.
+                  </li>
+                  <li>
+                    You release RootSource and the individual farm or food
+                    producer from any liability or claims resulting from
+                    foodborne illness, adverse allergic reactions, or any harm
+                    arising from food obtained through this platform.
+                  </li>
+                  <li>
+                    FDA recall alerts provided through this platform are
+                    informational only and may not reflect real-time recall
+                    status. Always verify recalls directly at FDA.gov.
+                  </li>
+                </ul>
+              </div>
+
+              <div className='mt-3 flex items-start gap-3'>
+                <Checkbox
+                  id='disclaimer'
+                  checked={disclaimerAccepted}
+                  onCheckedChange={(checked) =>
+                    setDisclaimerAccepted(checked === true)
+                  }
+                  disabled={isLoading}
+                  className='mt-0.5'
+                />
+                <Label
+                  htmlFor='disclaimer'
+                  className='cursor-pointer text-sm leading-snug font-medium'
+                >
+                  I have read and agree to the above disclaimer
+                </Label>
+              </div>
             </Field>
 
             <Field>

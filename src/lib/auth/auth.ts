@@ -29,6 +29,7 @@ export const auth = betterAuth({
       disclaimerAccepted: {
         type: 'boolean',
         required: true,
+        input: true, // allows it to be sent from the client
         defaultValue: false,
         input: true,
       },
