@@ -20,7 +20,8 @@ export async function OfferingsPanel({ farmerId }: { farmerId: string }) {
     <div>
       <h1 className='font-display text-ink text-4xl font-bold'>Offerings</h1>
       <p className='text-ink/70 mt-2 mb-8 text-lg'>
-        Keep prices and stock current. Hide anything you can&apos;t supply right now.
+        Keep prices and stock current. Hide anything you can&apos;t supply right
+        now.
       </p>
       <OfferingsManager offerings={offerings} />
     </div>

@@ -1,4 +1,4 @@
-import { APIError, betterAuth, boolean } from 'better-auth';
+import { APIError, betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 
 import { resolveAddress } from '../address';
@@ -80,6 +80,6 @@ export const auth = betterAuth({
       },
     },
   },
-  
+
   plugins: [],
 });

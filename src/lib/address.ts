@@ -13,7 +13,8 @@ export type ResolvedAddress = {
   };
 };
 
-type Result = { ok: true; value: ResolvedAddress } | { ok: false; error: string };
+type Result =
+  { ok: true; value: ResolvedAddress } | { ok: false; error: string };
 
 // street, city, ST 12345 (a comma between city and state is optional; ZIP+4 is accepted)
 const ADDRESS_RE =
@@ -36,10 +37,16 @@ export function resolveAddress(input: string): Result {
   const hit = zipcodes.lookup(zip);
   if (!hit) return { ok: false, error: `We couldn't find ZIP code ${zip}.` };
   if (hit.state !== state) {
-    return { ok: false, error: `ZIP code ${zip} is in ${hit.state}, not ${state}.` };
+    return {
+      ok: false,
+      error: `ZIP code ${zip} is in ${hit.state}, not ${state}.`,
+    };
   }
   if (hit.city.toLowerCase() !== city.toLowerCase()) {
-    return { ok: false, error: `ZIP code ${zip} belongs to ${hit.city}, not ${city}.` };
+    return {
+      ok: false,
+      error: `ZIP code ${zip} belongs to ${hit.city}, not ${city}.`,
+    };
   }
 
   return {

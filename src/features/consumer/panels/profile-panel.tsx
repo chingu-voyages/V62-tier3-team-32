@@ -19,8 +19,14 @@ export async function ProfilePanel({ consumerId }: { consumerId: string }) {
   return (
     <div className='grid gap-8 xl:grid-cols-[320px_1fr]'>
       <ConsumerProfileSummary
-        user={{ name: user.name, address: user.address ?? '', image: user.image }}
-        location={profile ? { zipCode: profile.zipCode, state: profile.state } : null}
+        user={{
+          name: user.name,
+          address: user.address ?? '',
+          image: user.image,
+        }}
+        location={
+          profile ? { zipCode: profile.zipCode, state: profile.state } : null
+        }
       />
 
       <ConsumerProfileForm
