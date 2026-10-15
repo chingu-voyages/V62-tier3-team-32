@@ -112,6 +112,9 @@ export function LoginForm() {
             variant='outline'
             size='lg'
             className='w-full rounded-full'
+            onClick={async () => {
+              await authClient.signIn.social({ provider: 'google' });
+            }}
           >
             Continue with Google
           </Button>
