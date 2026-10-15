@@ -31,7 +31,6 @@ export const auth = betterAuth({
         required: true,
         input: true, // allows it to be sent from the client
         defaultValue: false,
-        input: true,
       },
       disclaimerAcceptedAt: {
         type: 'string',
