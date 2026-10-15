@@ -9,7 +9,12 @@ export const auth = betterAuth({
   baseURL: { allowedHosts: ['http://localhost:3000', '*.netlify.app'] },
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
   emailAndPassword: { enabled: true },
-  socialProviders: {},
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
   advanced: {
     database: { joins: true },
   },
@@ -17,7 +22,7 @@ export const auth = betterAuth({
     additionalFields: {
       address: {
         type: 'string',
-        required: true,
+        required: false,
         input: true,
       },
       role: {
@@ -28,7 +33,7 @@ export const auth = betterAuth({
       },
       disclaimerAccepted: {
         type: 'boolean',
-        required: true,
+        required: false,
         input: true, // allows it to be sent from the client
         defaultValue: false,
       },
