@@ -11,6 +11,7 @@ import { toast } from './ui/toast';
 export function Navbar() {
   const { data: session } = authClient.useSession();
   const router = useRouter();
+  const isFarmer = session?.user?.role === 'FARMER';
 
   return (
     <nav className='mx-auto my-0 flex min-h-24 w-full max-w-300 items-center justify-between gap-6 px-5 py-0'>
@@ -19,8 +20,8 @@ export function Navbar() {
           <Image
             src={logo}
             alt='RootSource logo'
-            width={64}
-            height={64}
+            width={48}
+            height={48}
             className='brand-logo'
             priority
           />
@@ -31,17 +32,17 @@ export function Navbar() {
         </div>
       </Link>
       <div className='nav-actions'>
-        <Link href='/search' className='search-button'>
-          Search
-        </Link>
+        {!isFarmer && (
+          <Link href='/search' className='search-button'>
+            Search
+          </Link>
+        )}
         {session ? (
           <button
             type='button'
             onClick={async () => {
               await authClient.signOut();
-
               router.push('/login');
-
               toast.add({
                 type: 'success',
                 description: 'Logged out successfully.',
@@ -52,9 +53,9 @@ export function Navbar() {
             Log Out
           </button>
         ) : (
-          <button type='button' className='login-button'>
-            <Link href='/login'>Log in</Link>
-          </button>
+          <Link href='/login' className='login-button'>
+            Log in
+          </Link>
         )}
       </div>
     </nav>

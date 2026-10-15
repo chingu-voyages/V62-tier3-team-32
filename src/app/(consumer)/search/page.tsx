@@ -47,6 +47,9 @@ export default async function SearchPage({
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect('/login');
 
+  // Farmers don't search for farms — send them to their dashboard
+  if (session.user.role !== 'CONSUMER') redirect('/farmer');
+
   const consumer = await prisma.consumerProfile.findUnique({
     where: { userId: session.user.id },
   });
@@ -65,7 +68,7 @@ export default async function SearchPage({
             We need your ZIP code to map the farms closest to you.
           </p>
           <Link
-            href='/onboarding'
+            href='/consumer?tab=profile'
             className='bg-brand text-cream mt-8 inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
           >
             Complete profile
@@ -130,6 +133,17 @@ export default async function SearchPage({
   const safePage = requestedPage;
   const start = (safePage - 1) * PAGE_SIZE;
   const visible = farmsWithDistance.slice(start, start + PAGE_SIZE);
+
+  // Get the list of farmer user IDs on this page to check favorites
+  const farmerIds = visible.map((f) => f.user.id);
+  const favorites = await prisma.favorite.findMany({
+    where: {
+      consumerId: session.user.id,
+      farmerId: { in: farmerIds },
+    },
+    select: { farmerId: true },
+  });
+  const favoritedSet = new Set(favorites.map((f) => f.farmerId));
 
   const closest = farmsWithDistance[0]?.distance ?? 0;
   const farthest =
@@ -220,12 +234,10 @@ export default async function SearchPage({
               Try a wider distance range or update your ZIP code.
             </p>
 
-            {/* Filter row */}
             <div className='mt-8 flex flex-wrap items-center gap-3'>
               <RadiusFilter value={radius} />
             </div>
 
-            {/* Two small buttons */}
             <div className='mt-6 flex flex-wrap gap-3'>
               {radius !== 'all' && (
                 <Link
@@ -236,7 +248,7 @@ export default async function SearchPage({
                 </Link>
               )}
               <Link
-                href='/profile'
+                href='/consumer?tab=profile'
                 className='border-ink/10 text-ink hover:bg-ink/5 inline-flex h-10 items-center rounded-full border-2 px-5 text-sm font-bold transition-colors'
               >
                 Update ZIP code
@@ -251,7 +263,11 @@ export default async function SearchPage({
         <section className='mx-auto max-w-6xl px-6 pb-12'>
           <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
             {visible.map((farm) => (
-              <FarmCard key={farm.id} farm={farm} />
+              <FarmCard
+                key={farm.id}
+                farm={farm}
+                isFavorited={favoritedSet.has(farm.user.id)}
+              />
             ))}
           </div>
 

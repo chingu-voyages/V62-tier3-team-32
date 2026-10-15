@@ -1,26 +1,29 @@
-import { ClipboardList, UserRound, type LucideIcon } from 'lucide-react';
+import { ClipboardList, Heart, UserRound, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 
 import { initials } from '@/lib/format';
 
-export type ConsumerTab = 'orders' | 'profile';
+export type ConsumerTab = 'orders' | 'favorites' | 'profile';
 
 const TABS: { id: ConsumerTab; label: string; icon: LucideIcon }[] = [
   { id: 'orders', label: 'Orders', icon: ClipboardList },
+  { id: 'favorites', label: 'Favorites', icon: Heart },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ];
 
 type Props = {
   active: ConsumerTab;
   pendingCount: number;
+  favoritesCount: number;
   name: string;
   image: string | null;
-  location: string | null; // "93721, CA", or null until the profile is saved
+  location: string | null;
 };
 
 export function ConsumerSidebar({
   active,
   pendingCount,
+  favoritesCount,
   name,
   image,
   location,
@@ -29,9 +32,9 @@ export function ConsumerSidebar({
 
   return (
     <aside className='h-fit lg:sticky lg:top-24'>
-      {/* Identity card: desktop only */}
       <div className='border-ink/10 mb-4 hidden items-center gap-3 rounded-3xl border-2 bg-white p-4 lg:flex'>
         {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={image}
             alt=''
@@ -87,6 +90,14 @@ export function ConsumerSidebar({
                       <span className='sr-only'> orders in progress</span>
                     </span>
                   )}
+
+                  {id === 'favorites' && favoritesCount > 0 && (
+                    <span className='bg-coral/15 text-coral ml-1 rounded-full px-2 py-0.5 text-xs font-bold lg:ml-auto'>
+                      {favoritesCount}
+                      <span className='sr-only'> saved farms</span>
+                    </span>
+                  )}
+
                   {id === 'profile' && !complete && (
                     <>
                       <span
