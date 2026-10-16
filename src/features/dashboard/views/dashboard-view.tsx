@@ -1,14 +1,21 @@
 import Image from 'next/image';
-import { FarmCard } from './farm-card';
-
-import heroFarm from '@/assets/hero-farm.jpg';
-import recallGreens from '@/assets/recall-greens.jpg';
-import { prisma } from '@/lib/prisma';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { connection } from 'next/server';
 
+import heroFarm from '@/assets/hero-farm.jpg';
+import recallGreens from '@/assets/recall-greens.jpg';
+import { FarmCard } from './farm-card';
+import { auth } from '@/lib/auth/auth';
+import { prisma } from '@/lib/prisma';
+
 export async function DashboardView() {
   await connection();
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isLoggedIn = !!session;
+  const role = session?.user.role ?? null; // 'CONSUMER' | 'FARMER' | null
+
   const farms = await prisma.farmerProfile.findMany({
     where: { user: { role: 'FARMER' } },
     select: {
@@ -22,6 +29,7 @@ export async function DashboardView() {
     orderBy: [{ farmName: 'asc' }, { userId: 'asc' }],
     take: 3,
   });
+
   return (
     <div className='bg-cream w-full'>
       {/* HERO */}
@@ -40,21 +48,54 @@ export async function DashboardView() {
             and get instant alerts — plus a local swap — the moment an FDA
             recall hits something you buy.
           </p>
+
+          {/* HERO ACTIONS */}
           <div className='mt-8 flex flex-wrap gap-4'>
-            <a
-              href='/search'
-              className='bg-brand text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
-            >
-              Find farms near me
-            </a>
-            <a
-              href='#join'
-              className='bg-coral text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
-            >
-              Become a farm
-            </a>
+            {!isLoggedIn && (
+              <>
+                <a
+                  href='/search'
+                  className='bg-brand text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+                >
+                  Find farms near me
+                </a>
+                <a
+                  href='/signup?role=farmer'
+                  className='bg-coral text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+                >
+                  Become a farm
+                </a>
+              </>
+            )}
+
+            {isLoggedIn && role === 'CONSUMER' && (
+              <>
+                <a
+                  href='/search'
+                  className='bg-brand text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+                >
+                  Find farms near me
+                </a>
+                <a
+                  href='/consumer'
+                  className='bg-accent text-ink inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+                >
+                  My dashboard
+                </a>
+              </>
+            )}
+
+            {isLoggedIn && role === 'FARMER' && (
+              <a
+                href='/farmer'
+                className='bg-brand text-cream inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
+              >
+                Go to my farm dashboard
+              </a>
+            )}
           </div>
         </div>
+
         <div>
           <Image
             src={heroFarm}
@@ -181,29 +222,70 @@ export async function DashboardView() {
           </div>
         </div>
       </section>
+
       {/* CTA */}
       <section id='join' className='bg-brand w-full scroll-mt-24'>
         <div className='mx-auto max-w-4xl px-6 py-16 text-center'>
           <h2 className='font-display text-cream text-4xl font-bold lg:text-6xl'>
-            Ready to eat like a neighbor?
+            {isLoggedIn && role === 'FARMER'
+              ? 'Keep your farm growing.'
+              : isLoggedIn && role === 'CONSUMER'
+                ? 'Ready to eat like a neighbor?'
+                : 'Ready to eat like a neighbor?'}
           </h2>
+
           <p className='text-cream/80 mx-auto mt-4 max-w-xl text-lg'>
-            Join thousands of home cooks and local growers building a shorter,
-            safer food loop.
+            {isLoggedIn && role === 'FARMER'
+              ? 'Manage your offerings, orders, and profile from one dashboard.'
+              : isLoggedIn && role === 'CONSUMER'
+                ? 'Discover new farms, save favorites, and manage your orders.'
+                : 'Join thousands of home cooks and local growers building a shorter, safer food loop.'}
           </p>
+
+          {/* CTA ACTIONS */}
           <div className='mt-8 flex flex-wrap justify-center gap-4'>
-            <a
-              href='/signup?role=consumer'
-              className='bg-accent text-ink rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
-            >
-              Create consumer profile
-            </a>
-            <a
-              href='/farmer?tab=profile'
-              className='bg-cream text-brand rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
-            >
-              Create farmer profile
-            </a>
+            {!isLoggedIn && (
+              <>
+                <a
+                  href='/signup?role=consumer'
+                  className='bg-accent text-ink rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
+                >
+                  Start shopping
+                </a>
+                <a
+                  href='/signup?role=farmer'
+                  className='bg-cream text-brand rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
+                >
+                  Join as a farmer
+                </a>
+              </>
+            )}
+
+            {isLoggedIn && role === 'CONSUMER' && (
+              <>
+                <a
+                  href='/search'
+                  className='bg-accent text-ink rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
+                >
+                  Browse farms
+                </a>
+                <a
+                  href='/consumer?tab=favorites'
+                  className='bg-cream text-brand rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
+                >
+                  My favorites
+                </a>
+              </>
+            )}
+
+            {isLoggedIn && role === 'FARMER' && (
+              <a
+                href='/farmer'
+                className='bg-accent text-ink rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-1'
+              >
+                Go to my farm dashboard
+              </a>
+            )}
           </div>
         </div>
       </section>

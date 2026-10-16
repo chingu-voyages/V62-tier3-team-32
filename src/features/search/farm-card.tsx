@@ -2,6 +2,7 @@ import { MapPin, ShoppingBag, Truck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { FavoriteButton } from '@/components/favorites/favorite-button';
 import { formatDistance } from '@/lib/distance';
 import { money } from '@/lib/format';
 import type {
@@ -19,6 +20,7 @@ type FarmWithUser = FarmerProfile & {
 
 type Props = {
   farm: FarmWithUser;
+  isFavorited: boolean;
 };
 
 function CertificationBadge({ label }: { label: string }) {
@@ -52,7 +54,7 @@ function DeliveryBadge({ option }: { option: string }) {
   );
 }
 
-export function FarmCard({ farm }: Props) {
+export function FarmCard({ farm, isFavorited }: Props) {
   const certifications = Array.isArray(farm.certifications)
     ? (farm.certifications as string[])
     : [];
@@ -79,6 +81,13 @@ export function FarmCard({ farm }: Props) {
         )}
         <div className='absolute top-4 left-4 flex flex-wrap gap-2'>
           <DistanceBadge distance={farm.distance} />
+        </div>
+        <div className='absolute top-4 right-4'>
+          <FavoriteButton
+            farmerId={farm.user.id}
+            initialFavorited={isFavorited}
+            size='md'
+          />
         </div>
       </div>
 
@@ -130,7 +139,7 @@ export function FarmCard({ farm }: Props) {
         )}
 
         <Link
-          href={`/farmer-profile`}
+          href={`/farmer-profile?farmerId=${farm.user.id}`}
           className='bg-accent text-ink mt-auto inline-block w-full rounded-full px-5 py-3 text-center font-bold shadow-[3px_3px_0_rgba(33,48,28,0.25)] transition-transform hover:-translate-y-0.5'
         >
           View farm

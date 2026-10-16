@@ -4,13 +4,14 @@ import {
   ConsumerSidebar,
   type ConsumerTab,
 } from '@/features/consumer/consumer-sidebar';
+import { FavoritesPanel } from '@/features/consumer/panels/favorites-panel';
 import { OrdersPanel } from '@/features/consumer/panels/orders-panel';
 import { ProfilePanel } from '@/features/consumer/panels/profile-panel';
 import { syncConsumerProfile } from '@/lib/consumer-profile';
 import { prisma } from '@/lib/prisma';
 import { requireConsumer } from '@/lib/session';
 
-const TABS: ConsumerTab[] = ['orders', 'profile'];
+const TABS: ConsumerTab[] = ['orders', 'favorites', 'profile'];
 
 export default async function ConsumerDashboardPage({
   searchParams,
@@ -25,7 +26,7 @@ export default async function ConsumerDashboardPage({
     ? (tab as ConsumerTab)
     : 'orders';
 
-  const [user, pendingCount] = await Promise.all([
+  const [user, pendingCount, favoritesCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: consumerId },
       select: {
@@ -38,11 +39,11 @@ export default async function ConsumerDashboardPage({
     prisma.order.count({
       where: { consumerId, status: { in: ['PENDING', 'CONFIRMED', 'READY'] } },
     }),
+    prisma.favorite.count({ where: { consumerId } }),
   ]);
 
   let profile = user?.consumerProfile ?? null;
 
-  // Saved address but no profile row: derive the ZIP and coordinates from the address
   if (!profile && user?.address) {
     const synced = await syncConsumerProfile(consumerId, user.address);
     if (synced.ok) {
@@ -60,6 +61,7 @@ export default async function ConsumerDashboardPage({
         <ConsumerSidebar
           active={active}
           pendingCount={pendingCount}
+          favoritesCount={favoritesCount}
           name={name}
           image={user?.image ?? null}
           location={location}
@@ -86,6 +88,9 @@ export default async function ConsumerDashboardPage({
               firstName={name.split(' ')[0]}
               zipCode={user?.address as string}
             />
+          )}
+          {active === 'favorites' && (
+            <FavoritesPanel consumerId={consumerId} />
           )}
           {active === 'profile' && <ProfilePanel consumerId={consumerId} />}
         </div>

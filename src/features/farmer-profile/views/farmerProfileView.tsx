@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { PublicFarmerProfile } from '@/app/farmer-profile/page';
 import farmerPhoto from '@/assets/farm-sunsprig3.png';
 import farmHero from '@/assets/farm-sunsprig4.png';
+import { FavoriteButton } from '@/components/favorites/favorite-button';
 import {
   Select,
   SelectContent,
@@ -22,7 +23,12 @@ const currency = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
-export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
+type Props = {
+  farm: PublicFarmerProfile;
+  isFavorited: boolean;
+};
+
+export function FarmerProfileView({ farm, isFavorited }: Props) {
   const { user } = farm;
   const certifications = [...new Set(toStringArray(farm.certifications))];
   const practices = [...new Set(farm.growingPractices)];
@@ -54,7 +60,7 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
   return (
     <div className={styles.profile}>
       <div className={styles.container}>
-        <Link href='/#farms' className={styles.backLink}>
+        <Link href='/farms' className={styles.backLink}>
           <ArrowLeft size={16} aria-hidden='true' /> Back to all farms
         </Link>
         {
@@ -84,6 +90,11 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
             </p>
           </div>
           <div className={styles.actions}>
+            <FavoriteButton
+              farmerId={user.id}
+              initialFavorited={isFavorited}
+              variant='pill'
+            />
             {pickup && (
               <a
                 className={styles.button}
@@ -136,7 +147,6 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
                         <div className='flex items-start justify-between gap-3'>
                           <div className='min-w-0'>
                             <h3>{item.name}</h3>
-                            {/* Category Listing */}
                             {item.category === OfferingCategory.PRODUCE && (
                               <p>Produce</p>
                             )}
@@ -207,16 +217,14 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
             <section className={styles.card} aria-labelledby='farmer-title'>
               <h2 id='farmer-title'>Meet your farmer</h2>
               <div className={styles.farmer}>
-                {
-                  <Image
-                    src={user.image || farmerPhoto}
-                    alt={user.name}
-                    width={160}
-                    height={160}
-                    sizes='160px'
-                    unoptimized
-                  />
-                }
+                <Image
+                  src={user.image || farmerPhoto}
+                  alt={user.name}
+                  width={160}
+                  height={160}
+                  sizes='160px'
+                  unoptimized
+                />
                 <div>
                   <h3>{user.name}</h3>
                   <p className={styles.role}>Farm owner</p>

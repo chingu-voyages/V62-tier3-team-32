@@ -5,7 +5,11 @@ import Image from 'next/image';
 import heroFarm from '@/assets/hero-farm.jpg';
 import { SignupCard } from '../components/signup-form';
 
-export function SignupView() {
+export function SignupView({
+  defaultRole = 'consumer',
+}: {
+  defaultRole?: 'consumer' | 'farmer';
+}) {
   return (
     <div className='mx-auto grid max-w-6xl items-center gap-12 px-6 py-14 lg:grid-cols-2'>
       <div className='hidden lg:block'>
@@ -24,7 +28,7 @@ export function SignupView() {
           className='mt-8 aspect-4/3 w-full rounded-[2rem] border object-cover'
         />
       </div>
-      <SignupCard />
+      <SignupCard defaultRole={defaultRole} />
     </div>
   );
 }

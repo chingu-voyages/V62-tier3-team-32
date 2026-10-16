@@ -1,4 +1,7 @@
+import { headers } from 'next/headers';
+
 import { FarmerProfileView } from '@/features/farmer-profile/views/farmerProfileView';
+import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/prisma';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -16,6 +19,7 @@ const getFarm = cache((farmerId?: string) =>
     include: {
       user: {
         select: {
+          id: true,
           name: true,
           email: true,
           address: true,
@@ -54,7 +58,25 @@ export default async function FarmerProfilePage({ searchParams }: Props) {
   const { farmerId } = await searchParams;
   if (farmerId !== undefined && (typeof farmerId !== 'string' || !farmerId))
     notFound();
+
   const farm = await getFarm(farmerId);
   if (!farm) notFound();
-  return <FarmerProfileView farm={farm} />;
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  let isFavorited = false;
+
+  if (session && session.user.role === 'CONSUMER') {
+    const existing = await prisma.favorite.findUnique({
+      where: {
+        consumerId_farmerId: {
+          consumerId: session.user.id,
+          farmerId: farm.userId,
+        },
+      },
+      select: { id: true },
+    });
+    isFavorited = !!existing;
+  }
+
+  return <FarmerProfileView farm={farm} isFavorited={isFavorited} />;
 }
