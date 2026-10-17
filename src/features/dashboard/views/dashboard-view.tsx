@@ -44,9 +44,9 @@ export async function DashboardView() {
           </h1>
           <p className='text-ink/70 mt-6 max-w-md text-lg leading-relaxed'>
             RootSource connects you to farms near your door and the food they
-            have on the shelf today. Enter your zipcode, browse live harvests,
-            and get instant alerts — plus a local swap — the moment an FDA
-            recall hits something you buy.
+            have on the shelf today. Enter your ZIP code to browse live
+            harvests, save your favorite farms, and order directly from local
+            growers.
           </p>
 
           {/* HERO ACTIONS */}
@@ -107,7 +107,7 @@ export async function DashboardView() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
+            {/* HOW IT WORKS */}
       <section id='how' className='bg-ink w-full scroll-mt-24'>
         <div className='mx-auto max-w-6xl px-6 py-16'>
           <h2 className='font-display text-cream text-4xl font-bold lg:text-5xl'>
@@ -125,8 +125,8 @@ export async function DashboardView() {
                 Drop your zipcode
               </h3>
               <p className='text-cream/70 mt-2'>
-                We map every farm within reach and the produce available right
-                now.
+                Enter your ZIP code and we map every farm within driving
+                distance — sorted by how close they are to you.
               </p>
             </div>
             <div className='border-cream/10 bg-cream/5 rounded-3xl border-2 p-8'>
@@ -134,10 +134,11 @@ export async function DashboardView() {
                 2
               </span>
               <h3 className='font-display text-cream mt-5 text-2xl font-semibold'>
-                Browse &amp; order
+                Explore the harvest
               </h3>
               <p className='text-cream/70 mt-2'>
-                Pick up crates, reserve a delivery slot, and pay in a tap.
+                Browse each farm&apos;s current offerings, prices, and
+                availability. See their growing practices and certifications.
               </p>
             </div>
             <div className='border-cream/10 bg-cream/5 rounded-3xl border-2 p-8'>
@@ -145,50 +146,13 @@ export async function DashboardView() {
                 3
               </span>
               <h3 className='font-display text-cream mt-5 text-2xl font-semibold'>
-                Stay protected
+                Order &amp; save
               </h3>
               <p className='text-cream/70 mt-2'>
-                Recall alerts ping your phone with a local alternative
-                instantly.
+                Create a free account to place orders and save your favorite
+                farms for faster reordering.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* RECALL ALERT */}
-      <section id='alerts' className='bg-accent w-full scroll-mt-24'>
-        <div className='mx-auto max-w-6xl px-6 py-12'>
-          <div className='bg-cream flex flex-col gap-8 rounded-[2rem] p-8 shadow-[6px_6px_0_rgba(33,48,28,0.25)] md:flex-row md:items-center lg:p-12'>
-            <div className='flex-1'>
-              <span className='bg-coral/20 text-coral inline-block rounded-full px-4 py-1.5 text-sm font-bold tracking-widest uppercase'>
-                ⚠ Live recall alert
-              </span>
-              <h2 className='font-display text-ink mt-4 text-3xl font-bold lg:text-4xl'>
-                Your leafy greens are flagged.
-              </h2>
-              <p className='text-ink/70 mt-2 text-lg'>
-                A recall hit the &quot;Dark Leafy Greens&quot; category. We
-                found a local alternative at Sunsprig Farm — 2.1 mi away,
-                available today.
-              </p>
-              <a
-                href='#farms'
-                className={
-                  'bg-coral text-cream mt-6 inline-block rounded-full px-8 py-4 text-lg font-bold shadow-[4px_4px_0_rgba(33,48,28,0.3)] transition-transform hover:-translate-y-1'
-                }
-              >
-                See local alternative
-              </a>
-            </div>
-            <Image
-              src={recallGreens}
-              alt='Wooden crate of fresh chard and kale'
-              width={768}
-              height={768}
-              loading='lazy'
-              className='aspect-square w-full shrink-0 rounded-3xl object-cover md:w-56'
-            />
           </div>
         </div>
       </section>

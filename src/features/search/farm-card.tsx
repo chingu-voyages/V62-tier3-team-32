@@ -21,6 +21,7 @@ type FarmWithUser = FarmerProfile & {
 type Props = {
   farm: FarmWithUser;
   isFavorited: boolean;
+  isGuest?: boolean;
 };
 
 function CertificationBadge({ label }: { label: string }) {
@@ -54,7 +55,7 @@ function DeliveryBadge({ option }: { option: string }) {
   );
 }
 
-export function FarmCard({ farm, isFavorited }: Props) {
+export function FarmCard({ farm, isFavorited, isGuest = false }: Props) {
   const certifications = Array.isArray(farm.certifications)
     ? (farm.certifications as string[])
     : [];
@@ -82,13 +83,15 @@ export function FarmCard({ farm, isFavorited }: Props) {
         <div className='absolute top-4 left-4 flex flex-wrap gap-2'>
           <DistanceBadge distance={farm.distance} />
         </div>
-        <div className='absolute top-4 right-4'>
-          <FavoriteButton
-            farmerId={farm.user.id}
-            initialFavorited={isFavorited}
-            size='md'
-          />
-        </div>
+        {!isGuest && (
+          <div className='absolute top-4 right-4'>
+            <FavoriteButton
+              farmerId={farm.user.id}
+              initialFavorited={isFavorited}
+              size='md'
+            />
+          </div>
+        )}
       </div>
 
       {/* BODY */}
