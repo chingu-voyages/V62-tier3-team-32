@@ -33,7 +33,7 @@ export default async function FarmerDashboardPage({
     ? (params.range as RangeId)
     : '30d';
 
-  const [user, pendingCount] = await Promise.all([
+  const [user, pendingCount, requestCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: farmerId },
       select: {
@@ -45,6 +45,9 @@ export default async function FarmerDashboardPage({
     prisma.order.count({
       where: { farmerId, status: { in: ['PENDING', 'CONFIRMED', 'READY'] } },
     }),
+    prisma.pickupDeliveryRequest.count({
+      where: { farmerId, status: { in: ['PENDING', 'CONFIRMED'] } },
+    }),
   ]);
 
   const farmName = user?.farmerProfile?.farmName ?? null;
@@ -54,7 +57,7 @@ export default async function FarmerDashboardPage({
       <main className='mx-auto grid max-w-6xl gap-6 px-6 py-8 lg:grid-cols-[260px_1fr] lg:gap-10 lg:py-12'>
         <FarmerSidebar
           active={active}
-          pendingCount={pendingCount}
+          pendingCount={pendingCount + requestCount}
           ownerName={user?.name ?? session.user.name}
           ownerImage={user?.image ?? null}
           farmName={farmName}

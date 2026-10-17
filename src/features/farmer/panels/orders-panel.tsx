@@ -1,4 +1,5 @@
 import { FarmerOrderCard } from '@/features/farmer/farmer-order-card';
+import { PickupDeliveryRequestCard } from '@/features/farmer/pickup-delivery-request-card';
 import { PastOrderRow, type FarmerOrderView } from '@/features/orders/order-ui';
 import { prisma } from '@/lib/prisma';
 
@@ -10,6 +11,11 @@ export async function OrdersPanel({ farmerId }: { farmerId: string }) {
     where: { farmerId },
     include: { items: true, consumer: { select: { name: true } } },
     orderBy: { createdAt: 'desc' },
+  });
+
+  const requests = await prisma.pickupDeliveryRequest.findMany({
+    where: { farmerId },
+    orderBy: { slotStart: 'asc' },
   });
 
   const orders: FarmerOrderView[] = rows.map((o) => ({
@@ -26,19 +32,31 @@ export async function OrdersPanel({ farmerId }: { farmerId: string }) {
     })),
   }));
 
-  // Oldest first: pending orders are a work queue
-  const pending = orders
-    .filter((o) => PENDING_STATUSES.includes(o.status))
+  const entries = [
+    ...orders.map((order) => ({ kind: 'order' as const, ...order })),
+    ...requests.map((request) => ({
+      kind: 'request' as const,
+      ...request,
+      slotStart: request.slotStart.toISOString(),
+      slotEnd: request.slotEnd.toISOString(),
+    })),
+  ];
+
+  // Oldest first: pending orders and slot requests share one work queue.
+  const pending = entries
+    .filter((entry) => PENDING_STATUSES.includes(entry.status))
     .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-  const fulfilled = orders.filter((o) => !PENDING_STATUSES.includes(o.status));
+  const fulfilled = entries
+    .filter((entry) => ['COMPLETED', 'CANCELLED'].includes(entry.status))
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
     <div>
       <h1 className='font-display text-ink text-4xl font-bold'>Orders</h1>
       <p className='text-ink/70 mt-2 text-lg'>
         {pending.length === 0
-          ? 'No orders waiting on you.'
-          : `${pending.length} ${pending.length === 1 ? 'order needs' : 'orders need'} your attention.`}
+          ? 'No orders or requests waiting on you.'
+          : `${pending.length} ${pending.length === 1 ? 'order or request needs' : 'orders and requests need'} your attention.`}
       </p>
 
       <section className='mt-8'>
@@ -48,14 +66,22 @@ export async function OrdersPanel({ farmerId }: { farmerId: string }) {
         {pending.length === 0 ? (
           <div className='border-ink/20 rounded-3xl border-2 border-dashed p-8 text-center'>
             <p className='text-ink/60'>
-              New orders from shoppers will appear here.
+              New orders and pickup/delivery requests from shoppers will appear
+              here.
             </p>
           </div>
         ) : (
           <div className='space-y-5'>
-            {pending.map((o) => (
-              <FarmerOrderCard key={o.id} order={o} />
-            ))}
+            {pending.map((entry) =>
+              entry.kind === 'request' ? (
+                <PickupDeliveryRequestCard
+                  key={`request-${entry.id}`}
+                  request={entry}
+                />
+              ) : (
+                <FarmerOrderCard key={`order-${entry.id}`} order={entry} />
+              )
+            )}
           </div>
         )}
       </section>
@@ -66,14 +92,28 @@ export async function OrdersPanel({ farmerId }: { farmerId: string }) {
         </h2>
         {fulfilled.length === 0 ? (
           <p className='text-ink/60'>
-            Completed and cancelled orders will show up here.
+            Completed and cancelled orders and pickup/delivery requests will
+            show up here.
           </p>
         ) : (
           <>
             <div className='space-y-3'>
-              {fulfilled.slice(0, HISTORY_LIMIT).map((o) => (
-                <PastOrderRow key={o.id} order={o} name={o.consumerName} />
-              ))}
+              {fulfilled
+                .slice(0, HISTORY_LIMIT)
+                .map((entry) =>
+                  entry.kind === 'request' ? (
+                    <PickupDeliveryRequestCard
+                      key={`request-${entry.id}`}
+                      request={entry}
+                    />
+                  ) : (
+                    <PastOrderRow
+                      key={`order-${entry.id}`}
+                      order={entry}
+                      name={entry.consumerName}
+                    />
+                  )
+                )}
             </div>
             {fulfilled.length > HISTORY_LIMIT && (
               <p className='text-ink/60 mt-3 text-sm'>
