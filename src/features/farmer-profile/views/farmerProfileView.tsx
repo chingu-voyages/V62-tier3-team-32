@@ -16,13 +16,23 @@ import {
 import { toStringArray } from '@/features/farmer/constants';
 import { DeliveryOptions, OfferingCategory } from '@generated/prisma/enums';
 import styles from './farmerProfile.module.css';
+import {
+  PickupDeliverySlots,
+  type ConsumerDetails,
+} from './pickup-delivery-slots';
 
 const currency = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
 });
 
-export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
+export function FarmerProfileView({
+  farm,
+  consumer,
+}: {
+  farm: PublicFarmerProfile;
+  consumer: ConsumerDetails | null;
+}) {
   const { user } = farm;
   const certifications = [...new Set(toStringArray(farm.certifications))];
   const practices = [...new Set(farm.growingPractices)];
@@ -84,28 +94,22 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
             </p>
           </div>
           <div className={styles.actions}>
-            {pickup && (
+            <PickupDeliverySlots
+              farmerId={farm.userId}
+              farmName={farm.farmName}
+              farmAddress={user.address}
+              consumer={consumer}
+              pickup={pickup}
+              delivery={delivery}
+            />
+            {consumer && (
               <a
-                className={styles.button}
-                href={`${emailHref}?subject=Pickup%20order%20inquiry`}
+                className={`${styles.button} ${styles.outline}`}
+                href='#farm-contact'
               >
-                Ask about pickup
+                Contact the farm
               </a>
             )}
-            {delivery && (
-              <a
-                className={`${styles.button} ${styles.delivery}`}
-                href={`${emailHref}?subject=Delivery%20order%20inquiry`}
-              >
-                Ask about delivery
-              </a>
-            )}
-            <a
-              className={`${styles.button} ${styles.outline}`}
-              href='#farm-contact'
-            >
-              Contact the farm
-            </a>
           </div>
         </section>
         <div className={styles.columns}>
@@ -293,17 +297,19 @@ export function FarmerProfileView({ farm }: { farm: PublicFarmerProfile }) {
           </aside>
         </div>
       </div>
-      <section className={styles.cta} aria-labelledby='meet-title'>
-        <h2 id='meet-title'>Meet your farmer.</h2>
-        <p>
-          Reach {user.name} to ask about current offerings at {farm.farmName}.
-        </p>
-        <div className={styles.actions}>
-          <a className={styles.button} href={emailHref}>
-            Email the farm
-          </a>
-        </div>
-      </section>
+      {consumer && (
+        <section className={styles.cta} aria-labelledby='meet-title'>
+          <h2 id='meet-title'>Meet your farmer.</h2>
+          <p>
+            Reach {user.name} to ask about current offerings at {farm.farmName}.
+          </p>
+          <div className={styles.actions}>
+            <a className={styles.button} href={emailHref}>
+              Email the farm
+            </a>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

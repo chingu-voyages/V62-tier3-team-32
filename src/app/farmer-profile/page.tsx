@@ -1,5 +1,6 @@
 import { FarmerProfileView } from '@/features/farmer-profile/views/farmerProfileView';
 import { prisma } from '@/lib/prisma';
+import { getConsumerSession } from '@/lib/session';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
@@ -56,5 +57,12 @@ export default async function FarmerProfilePage({ searchParams }: Props) {
     notFound();
   const farm = await getFarm(farmerId);
   if (!farm) notFound();
-  return <FarmerProfileView farm={farm} />;
+  const session = await getConsumerSession();
+  const consumer = session
+    ? await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true, address: true },
+      })
+    : null;
+  return <FarmerProfileView farm={farm} consumer={consumer} />;
 }
