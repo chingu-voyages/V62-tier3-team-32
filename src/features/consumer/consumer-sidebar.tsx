@@ -87,7 +87,10 @@ export function ConsumerSidebar({
                   {id === 'orders' && pendingCount > 0 && (
                     <span className='bg-coral text-cream ml-1 rounded-full px-2 py-0.5 text-xs lg:ml-auto'>
                       {pendingCount}
-                      <span className='sr-only'> orders in progress</span>
+                      <span className='sr-only'>
+                        {' '}
+                        orders and requests in progress
+                      </span>
                     </span>
                   )}
 

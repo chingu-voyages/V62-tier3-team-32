@@ -81,6 +81,7 @@ export async function createPickupDeliveryRequest(
     )
       return { error: 'Please reopen the form and try again.' };
     revalidatePath('/farmer');
+    revalidatePath('/consumer');
     return { success: true };
   } catch (error) {
     // The unique index also handles simultaneous requests with different IDs.
@@ -129,6 +130,7 @@ export async function updatePickupDeliveryStatus(
     if (!result.count)
       return { error: 'This request was just updated. Refresh and try again.' };
     revalidatePath('/farmer');
+    revalidatePath('/consumer');
     return { success: true };
   } catch {
     return { error: 'Unable to update this request. Please try again.' };
