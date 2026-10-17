@@ -1,6 +1,7 @@
 'use client';
 
 import { Heart } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
 import { toggleFavorite } from '@/app/actions/favorites';
@@ -13,6 +14,7 @@ type Variant = 'icon' | 'pill';
 type Props = {
   farmerId: string;
   initialFavorited: boolean;
+  isGuest?: boolean;
   size?: Size;
   variant?: Variant;
   className?: string;
@@ -33,16 +35,24 @@ const ICON_SIZES: Record<Size, string> = {
 export function FavoriteButton({
   farmerId,
   initialFavorited,
+  isGuest = false,
   size = 'md',
   variant = 'icon',
   className,
 }: Props) {
+  const router = useRouter();
   const [favorited, setFavorited] = useState(initialFavorited);
   const [isPending, startTransition] = useTransition();
 
   function handleClick(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+
+    // Guests → go to signup
+    if (isGuest) {
+      router.push('/signup?role=consumer');
+      return;
+    }
 
     const next = !favorited;
     setFavorited(next);
@@ -99,7 +109,13 @@ export function FavoriteButton({
       onClick={handleClick}
       disabled={isPending}
       aria-pressed={favorited}
-      aria-label={favorited ? 'Remove from favorites' : 'Save to favorites'}
+      aria-label={
+        isGuest
+          ? 'Sign up to save to favorites'
+          : favorited
+            ? 'Remove from favorites'
+            : 'Save to favorites'
+      }
       className={cn(
         'inline-flex items-center justify-center rounded-full transition-all disabled:opacity-60',
         'bg-cream/95 backdrop-blur-sm hover:scale-110 hover:bg-cream',

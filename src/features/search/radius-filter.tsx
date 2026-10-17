@@ -1,7 +1,8 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTransition } from 'react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 
 type RadiusValue = 25 | 50 | 100 | 150 | 200 | 'all';
 
@@ -23,12 +24,15 @@ export function RadiusFilter({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const next = new URLSearchParams(searchParams.toString());
     next.set('radius', e.target.value);
     next.delete('page'); // reset to page 1
-    router.push(`/search?${next.toString()}`);
+    startTransition(() => {
+      router.push(`/search?${next.toString()}`);
+    });
   }
 
   return (
@@ -38,7 +42,8 @@ export function RadiusFilter({
         <select
           value={value}
           onChange={handleChange}
-          className='border-ink/10 text-ink hover:bg-ink/5 focus-visible:ring-brand h-11 cursor-pointer appearance-none rounded-full border-2 bg-white pr-11 pl-5 text-sm font-bold transition-colors focus-visible:ring-2 focus-visible:outline-none'
+          disabled={isPending}
+          className='border-ink/10 text-ink hover:bg-ink/5 focus-visible:ring-brand h-11 cursor-pointer appearance-none rounded-full border-2 bg-white pr-11 pl-5 text-sm font-bold transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60'
         >
           {OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>
@@ -46,14 +51,27 @@ export function RadiusFilter({
             </option>
           ))}
         </select>
-        <ChevronDown
-          className='text-ink/60 pointer-events-none absolute right-4 h-4 w-4'
-          aria-hidden
-        />
+        {isPending ? (
+          <Loader2
+            className='text-ink/60 pointer-events-none absolute right-4 h-4 w-4 animate-spin'
+            aria-hidden
+          />
+        ) : (
+          <ChevronDown
+            className='text-ink/60 pointer-events-none absolute right-4 h-4 w-4'
+            aria-hidden
+          />
+        )}
       </label>
       {typeof total === 'number' && total > 0 && (
         <span className='bg-ink/5 text-ink/70 inline-block rounded-full px-3 py-1.5 text-xs font-bold'>
           {total} found
+        </span>
+      )}
+      {isPending && (
+        <span className='text-ink/60 inline-flex items-center gap-1.5 text-xs font-medium'>
+          <Loader2 className='h-3.5 w-3.5 animate-spin' aria-hidden />
+          Loading...
         </span>
       )}
     </div>

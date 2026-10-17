@@ -41,6 +41,9 @@ model User {
   favoritesAsConsumer Favorite[] @relation("ConsumerFavorites")
   favoritesAsFarmer   Favorite[] @relation("FarmerFavorites")
 
+  pickupDeliveryAsConsumer PickupDeliveryRequest[] @relation("ConsumerPickupDelivery")
+  pickupDeliveryAsFarmer   PickupDeliveryRequest[] @relation("FarmerPickupDelivery")
+
   @@unique([email])
   @@map("users")
 }
@@ -231,4 +234,37 @@ model Favorite {
   @@index([consumerId])
   @@index([farmerId])
   @@map("favorites")
+}
+
+enum PickupDeliveryMethod {
+  PICKUP
+  DELIVERY
+}
+
+enum PickupDeliveryStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model PickupDeliveryRequest {
+  id           String                   @id
+  consumerId   String
+  farmerId     String
+  consumer     User                     @relation("ConsumerPickupDelivery", fields: [consumerId], references: [id])
+  farmer       User                     @relation("FarmerPickupDelivery", fields: [farmerId], references: [id])
+  method       PickupDeliveryMethod
+  status       PickupDeliveryStatus     @default(PENDING)
+  consumerName String
+  address      String?
+  slotStart    DateTime
+  slotEnd      DateTime
+  timeZone     String
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  @@index([farmerId, status, slotStart])
+  @@index([consumerId])
+  @@map("pickup_delivery_requests")
 }
