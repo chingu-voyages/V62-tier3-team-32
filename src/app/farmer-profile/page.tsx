@@ -63,9 +63,12 @@ export default async function FarmerProfilePage({ searchParams }: Props) {
   if (!farm) notFound();
 
   const session = await auth.api.getSession({ headers: await headers() });
+
+  // Show favorite button only for logged-in consumers
+  const isConsumer = session?.user.role === 'CONSUMER';
   let isFavorited = false;
 
-  if (session && session.user.role === 'CONSUMER') {
+  if (isConsumer && session) {
     const existing = await prisma.favorite.findUnique({
       where: {
         consumerId_farmerId: {
@@ -85,10 +88,12 @@ export default async function FarmerProfilePage({ searchParams }: Props) {
           select: { name: true, address: true },
         })
       : null;
+
   return (
     <FarmerProfileView
       farm={farm}
       isFavorited={isFavorited}
+      isLoggedIn={isConsumer}
       consumer={consumer}
     />
   );

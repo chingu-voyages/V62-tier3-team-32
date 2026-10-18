@@ -16,15 +16,17 @@ const TABS: ConsumerTab[] = ['orders', 'favorites', 'profile'];
 export default async function ConsumerDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; page?: string }>;
 }) {
   const session = await requireConsumer();
   const consumerId = session.user.id;
 
-  const { tab } = await searchParams;
+  const { tab, page } = await searchParams;
   const active: ConsumerTab = TABS.includes(tab as ConsumerTab)
     ? (tab as ConsumerTab)
     : 'orders';
+
+  const requestedPage = Math.max(1, parseInt(page ?? '1', 10) || 1);
 
   const [user, pendingCount, favoritesCount, requestCount] = await Promise.all([
     prisma.user.findUnique({
@@ -91,7 +93,14 @@ export default async function ConsumerDashboardPage({
               firstName={name.split(' ')[0]}
             />
           )}
-          {active === 'favorites' && <FavoritesPanel consumerId={consumerId} />}
+
+          {active === 'favorites' && (
+            <FavoritesPanel
+              consumerId={consumerId}
+              requestedPage={requestedPage}
+            />
+          )}
+
           {active === 'profile' && <ProfilePanel consumerId={consumerId} />}
         </div>
       </main>

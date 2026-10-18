@@ -30,10 +30,16 @@ const currency = new Intl.NumberFormat('en-US', {
 type Props = {
   farm: PublicFarmerProfile;
   isFavorited: boolean;
+  isLoggedIn: boolean;
   consumer: ConsumerDetails | null;
 };
 
-export function FarmerProfileView({ farm, isFavorited, consumer }: Props) {
+export function FarmerProfileView({
+  farm,
+  isFavorited,
+  isLoggedIn,
+  consumer,
+}: Props) {
   const { user } = farm;
   const certifications = [...new Set(toStringArray(farm.certifications))];
   const practices = [...new Set(farm.growingPractices)];
@@ -95,11 +101,13 @@ export function FarmerProfileView({ farm, isFavorited, consumer }: Props) {
             </p>
           </div>
           <div className={styles.actions}>
-            <FavoriteButton
-              farmerId={user.id}
-              initialFavorited={isFavorited}
-              variant='pill'
-            />
+            {isLoggedIn && (
+              <FavoriteButton
+                farmerId={user.id}
+                initialFavorited={isFavorited}
+                variant='pill'
+              />
+            )}
             <PickupDeliverySlots
               farmerId={farm.userId}
               farmName={farm.farmName}

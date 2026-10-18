@@ -5,40 +5,60 @@ import { prisma } from '@/lib/prisma';
 import { distanceInMiles, formatDistance } from '@/lib/distance';
 import { FavoriteButton } from '@/components/favorites/favorite-button';
 
+const PAGE_SIZE = 6;
+
+function buildFavoritesUrl(page: number): string {
+  return page > 1
+    ? `/consumer?tab=favorites&page=${page}`
+    : '/consumer?tab=favorites';
+}
+
 type Props = {
   consumerId: string;
+  requestedPage?: number;
 };
 
-export async function FavoritesPanel({ consumerId }: Props) {
-  const [consumer, favorites] = await Promise.all([
+export async function FavoritesPanel({ consumerId, requestedPage = 1 }: Props) {
+  const [consumer, totalCount] = await Promise.all([
     prisma.consumerProfile.findUnique({
       where: { userId: consumerId },
       select: { latitude: true, longitude: true },
     }),
-    prisma.favorite.findMany({
-      where: { consumerId },
-      include: {
-        farmer: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            farmerProfile: {
-              select: {
-                farmName: true,
-                coverPhotoUrl: true,
-                about: true,
-                state: true,
-                latitude: true,
-                longitude: true,
-              },
+    prisma.favorite.count({ where: { consumerId } }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const safePage = Math.min(
+    Math.max(1, requestedPage),
+    Math.max(1, totalPages)
+  );
+  const skip = (safePage - 1) * PAGE_SIZE;
+
+  const favorites = await prisma.favorite.findMany({
+    where: { consumerId },
+    include: {
+      farmer: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          farmerProfile: {
+            select: {
+              farmName: true,
+              coverPhotoUrl: true,
+              about: true,
+              state: true,
+              latitude: true,
+              longitude: true,
             },
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
-    }),
-  ]);
+    },
+    orderBy: { createdAt: 'desc' },
+    skip,
+    take: PAGE_SIZE,
+  });
 
   const savedFarms = favorites
     .filter((f) => f.farmer.farmerProfile)
@@ -66,7 +86,8 @@ export async function FavoritesPanel({ consumerId }: Props) {
       };
     });
 
-  if (savedFarms.length === 0) {
+  // Empty state
+  if (totalCount === 0) {
     return (
       <div>
         <h1 className='font-display text-ink text-4xl leading-tight font-bold'>
@@ -103,9 +124,22 @@ export async function FavoritesPanel({ consumerId }: Props) {
         Your favorites
       </h1>
       <p className='text-ink/70 mt-2 text-lg'>
-        {savedFarms.length} saved {savedFarms.length === 1 ? 'farm' : 'farms'}.
+        {totalCount} saved {totalCount === 1 ? 'farm' : 'farms'}.
       </p>
 
+      {/* Count + page info */}
+      <div className='mt-6 flex flex-wrap items-center gap-3'>
+        <span className='bg-ink/5 text-ink/70 inline-flex items-center rounded-full px-4 py-2 text-sm font-bold'>
+          {totalCount} saved
+        </span>
+        {totalPages > 1 && (
+          <span className='bg-ink/5 text-ink/70 inline-flex items-center rounded-full px-4 py-2 text-sm font-bold'>
+            Page {safePage} of {totalPages}
+          </span>
+        )}
+      </div>
+
+      {/* FARM GRID */}
       <div className='mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3'>
         {savedFarms.map((farm) => (
           <article
@@ -165,6 +199,34 @@ export async function FavoritesPanel({ consumerId }: Props) {
           </article>
         ))}
       </div>
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <nav
+          aria-label='Favorites pagination'
+          className='mt-12 flex items-center justify-center gap-2'
+        >
+          {safePage > 1 && (
+            <Link
+              href={buildFavoritesUrl(safePage - 1)}
+              className='border-ink/10 text-ink hover:bg-ink/5 inline-flex h-10 items-center rounded-full border-2 px-5 text-sm font-bold transition-colors'
+            >
+              Previous
+            </Link>
+          )}
+          <span className='text-ink/60 px-3 text-sm'>
+            Page {safePage} of {totalPages}
+          </span>
+          {safePage < totalPages && (
+            <Link
+              href={buildFavoritesUrl(safePage + 1)}
+              className='bg-brand text-cream hover:bg-brand/90 inline-flex h-10 items-center rounded-full px-5 text-sm font-bold shadow-[3px_3px_0_rgba(33,48,28,0.25)] transition-transform hover:-translate-y-0.5'
+            >
+              Next
+            </Link>
+          )}
+        </nav>
+      )}
     </div>
   );
 }
