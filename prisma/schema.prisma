@@ -1,0 +1,272 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CONSUMER
+  FARMER
+}
+
+model User {
+  id            String  @id
+  name          String
+  email         String
+  emailVerified Boolean @default(false)
+  image         String?
+
+  role    Role    @default(CONSUMER)
+  address String?
+
+  sessions Session[]
+  accounts Account[]
+
+  consumerProfile ConsumerProfile?
+  farmerProfile   FarmerProfile?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ordersAsConsumer Order[]    @relation("ConsumerOrders")
+  ordersAsFarmer   Order[]    @relation("FarmerOrders")
+  offerings        Offering[] @relation("FarmerOfferings")
+
+  pickupDeliveryAsConsumer PickupDeliveryRequest[] @relation("ConsumerPickupDelivery")
+  pickupDeliveryAsFarmer   PickupDeliveryRequest[] @relation("FarmerPickupDelivery")
+
+  disclaimerAccepted   Boolean   @default(false)
+  disclaimerAcceptedAt DateTime?
+
+  favoritesAsConsumer Favorite[] @relation("ConsumerFavorites")
+  favoritesAsFarmer   Favorite[] @relation("FarmerFavorites")
+
+  @@unique([email])
+  @@map("users")
+}
+
+model ConsumerProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  zipCode   String
+  state     String
+  latitude  Float
+  longitude Float
+  city      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([state])
+  @@index([zipCode])
+  @@index([latitude, longitude])
+  @@map("consumer_profiles")
+}
+
+enum DeliveryOptions {
+  PICKUP
+  DELIVERY
+  BOTH
+}
+
+model FarmerProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  farmName  String
+  zipCode   String
+  state     String
+  latitude  Float
+  longitude Float
+
+  deliveryOptions  DeliveryOptions
+  coverPhotoUrl    String?
+  about            String?
+  certifications   Json?
+  growingPractices String[]        @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([state])
+  @@index([zipCode])
+  @@index([latitude, longitude])
+  @@map("farmer_profiles")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id         String @id @default(uuid())
+  consumerId String
+  farmerId   String
+  consumer   User   @relation("ConsumerOrders", fields: [consumerId], references: [id])
+  farmer     User   @relation("FarmerOrders", fields: [farmerId], references: [id])
+
+  status OrderStatus @default(PENDING)
+  total  Decimal     @db.Decimal(10, 2)
+  items  OrderItem[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
+  @@index([farmerId, status, completedAt])
+  @@index([consumerId, status])
+  @@index([farmerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  name      String
+  unitPrice Decimal @db.Decimal(10, 2)
+  quantity  Int
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Offering {
+  id       String @id @default(uuid())
+  farmerId String
+  farmer   User   @relation("FarmerOfferings", fields: [farmerId], references: [id], onDelete: Cascade)
+
+  name        String
+  category    OfferingCategory @default(OTHER)
+  unit        String // "lb", "bunch", "dozen"
+  price       Decimal          @db.Decimal(10, 2)
+  quantity    Int              @default(0)
+  isAvailable Boolean          @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([farmerId, isAvailable])
+  @@map("offerings")
+}
+
+enum OfferingCategory {
+  PROTEIN
+  PRODUCE
+  OTHER
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  consumerId String
+  consumer   User     @relation("ConsumerFavorites", fields: [consumerId], references: [id], onDelete: Cascade)
+  farmerId   String
+  farmer     User     @relation("FarmerFavorites", fields: [farmerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([consumerId, farmerId])
+  @@index([consumerId])
+  @@index([farmerId])
+  @@map("favorites")
+}
+
+enum PickupDeliveryMethod {
+  PICKUP
+  DELIVERY
+}
+
+enum PickupDeliveryStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model PickupDeliveryRequest {
+  id           String               @id
+  consumerId   String
+  farmerId     String
+  consumer     User                 @relation("ConsumerPickupDelivery", fields: [consumerId], references: [id])
+  farmer       User                 @relation("FarmerPickupDelivery", fields: [farmerId], references: [id])
+  method       PickupDeliveryMethod
+  status       PickupDeliveryStatus @default(PENDING)
+  consumerName String
+  address      String?
+  slotStart    DateTime
+  slotEnd      DateTime
+  timeZone     String
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([farmerId, status, slotStart])
+  @@index([consumerId])
+  // Active customer/farm/slot uniqueness is enforced by a partial index in
+  // migration 20261016200000_prevent_duplicate_pickup_delivery_slots.
+  @@map("pickup_delivery_requests")
+}

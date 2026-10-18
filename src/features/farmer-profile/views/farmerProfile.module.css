@@ -1,0 +1,436 @@
+.profile {
+  background: #f9f7e9;
+  color: #203323;
+  font-family: var(--font-body);
+}
+.container {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 36px 24px 40px;
+}
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #008532;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.hero {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2.62;
+  object-fit: cover;
+  border: 1px solid #d8dec7;
+  border-radius: 28px;
+  box-shadow: 0 6px 0 #d8dec7;
+}
+.intro {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+  align-items: end;
+  margin: 26px 0 56px;
+}
+.organic,
+.today,
+.soon,
+.tags span {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.organic {
+  background: #d5efd5;
+  color: #006a2b;
+  letter-spacing: 1px;
+}
+.profile h1,
+.profile h2,
+.practices h3,
+.farmer h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.profile h1 {
+  font-size: clamp(36px, 4vw, 48px);
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  margin: 12px 0 6px;
+}
+.meta {
+  color: #586f5c;
+  font-size: 16px;
+}
+.summary {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-top: 14px;
+  max-width: 540px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: #f8c85f;
+  color: #203323;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 4px 0 #d2ccbb;
+  transition: background-color 150ms;
+}
+.button:hover {
+  background: #f2b83a;
+}
+.delivery {
+  background: #ff7865;
+  color: #fff;
+}
+.delivery:hover {
+  background: #e75e4b;
+}
+.outline {
+  border: 2px solid #008532;
+  color: #008532;
+  background: transparent;
+  box-shadow: none;
+}
+.outline:hover {
+  background: #e5f4e5;
+}
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 2.09fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.stack {
+  display: grid;
+  gap: 32px;
+  min-width: 0;
+}
+.card {
+  border: 1px solid #d8dec7;
+  background: white;
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 6px 0 #d8dec7;
+  scroll-margin-top: 24px;
+}
+.card h2 {
+  font-size: 30px;
+  line-height: 1.25;
+  letter-spacing: -0.7px;
+  margin-bottom: 16px;
+}
+.card p {
+  color: #586f5c;
+  font-size: 16px;
+  line-height: 1.65;
+}
+.gallery {
+  margin-top: 24px;
+}
+.gallery > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.gallery img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.83;
+  object-fit: cover;
+  border-radius: 24px;
+}
+.gallery figcaption {
+  text-align: center;
+  color: #586f5c;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.harvest,
+.certifications {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.harvest {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.harvest li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  background: #f6f5ef;
+  border: 1px solid #d8dec7;
+  border-radius: 24px;
+}
+.harvest h3,
+.certifications h3 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.harvest p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+.today {
+  background: #dfecdc;
+  color: #008532;
+  flex-shrink: 0;
+}
+.soon {
+  background: #f8e2d9;
+  color: #d84e3d;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+.practices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.practices article {
+  border: 1px solid #d8dec7;
+  border-radius: 24px;
+  padding: 16px;
+}
+.practiceIcon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #d5efd5;
+  color: #006a2b;
+  margin-bottom: 16px;
+}
+.practices h3 {
+  font-size: 18px;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.practices p {
+  font-size: 14px;
+}
+.farmer {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+.farmer img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 24px;
+  flex-shrink: 0;
+}
+.farmer h3 {
+  color: #008532;
+  font-size: 21px;
+  line-height: 1.3;
+}
+.farmer .role {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.sideCard {
+  padding: 24px;
+}
+.sideCard h2 {
+  font-size: 24px;
+}
+.sideCard p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.details {
+  display: grid;
+  gap: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.details dt {
+  text-transform: uppercase;
+  color: #586f5c;
+  font-weight: 800;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+.tags span {
+  background: #fcf1d7;
+}
+.tags span:last-child {
+  color: #008532;
+  background: #e3f2e9;
+}
+.certifications {
+  display: grid;
+  gap: 12px;
+}
+.certifications li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #e6f5e5;
+  padding: 12px;
+  border-radius: 24px;
+}
+.certifications p {
+  margin-top: 2px;
+}
+.check {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: #008532;
+  color: white;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.contactLinks {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 14px;
+}
+.contactLinks a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+.contactLinks svg {
+  color: #008532;
+  flex-shrink: 0;
+}
+.cta {
+  text-align: center;
+  background: #18271b;
+  color: #f1f2e7;
+  padding: 60px 24px 64px;
+}
+.cta h2 {
+  font-size: 36px;
+  line-height: 1.3;
+}
+.cta p {
+  max-width: 680px;
+  margin: 12px auto 32px;
+  color: #bdc4b7;
+  font-size: 18px;
+  line-height: 1.6;
+}
+.cta .actions {
+  justify-content: center;
+  gap: 16px;
+}
+.cta .button {
+  padding-inline: 28px;
+  box-shadow: 0 4px 0 #101e13;
+}
+.cta .call {
+  background: transparent;
+  color: #f1f2e7;
+  border: 2px solid #707b6b;
+  box-shadow: none;
+}
+.call:hover {
+  background: #2c3c2f;
+}
+.profile a:focus-visible {
+  outline: 3px solid #008532;
+  outline-offset: 5px;
+}
+.cta a:focus-visible {
+  outline-color: #f8c85f;
+}
+@media (max-width: 1050px) {
+  .intro {
+    grid-template-columns: 1fr;
+  }
+  .intro .actions {
+    justify-content: flex-start;
+  }
+  .harvest {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 24px;
+  }
+}
+@media (max-width: 800px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+  .harvest {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hero {
+    aspect-ratio: 1.8;
+  }
+  .intro {
+    margin-bottom: 32px;
+  }
+}
+@media (max-width: 540px) {
+  .container {
+    padding: 24px 16px 32px;
+  }
+  .card {
+    padding: 22px 18px;
+  }
+  .card h2 {
+    font-size: 26px;
+  }
+  .harvest,
+  .practices,
+  .gallery > div {
+    grid-template-columns: 1fr;
+  }
+  .farmer {
+    flex-direction: column;
+  }
+  .intro .actions {
+    gap: 10px;
+  }
+  .button {
+    padding-inline: 18px;
+  }
+  .summary {
+    font-size: 16px;
+  }
+  .cta h2 {
+    font-size: 30px;
+  }
+}
