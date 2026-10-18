@@ -35,14 +35,14 @@ model User {
   ordersAsFarmer   Order[]    @relation("FarmerOrders")
   offerings        Offering[] @relation("FarmerOfferings")
 
+  pickupDeliveryAsConsumer PickupDeliveryRequest[] @relation("ConsumerPickupDelivery")
+  pickupDeliveryAsFarmer   PickupDeliveryRequest[] @relation("FarmerPickupDelivery")
+
   disclaimerAccepted   Boolean   @default(false)
   disclaimerAcceptedAt DateTime?
 
   favoritesAsConsumer Favorite[] @relation("ConsumerFavorites")
   favoritesAsFarmer   Favorite[] @relation("FarmerFavorites")
-
-  pickupDeliveryAsConsumer PickupDeliveryRequest[] @relation("ConsumerPickupDelivery")
-  pickupDeliveryAsFarmer   PickupDeliveryRequest[] @relation("FarmerPickupDelivery")
 
   @@unique([email])
   @@map("users")
@@ -249,22 +249,24 @@ enum PickupDeliveryStatus {
 }
 
 model PickupDeliveryRequest {
-  id           String                   @id
+  id           String               @id
   consumerId   String
   farmerId     String
-  consumer     User                     @relation("ConsumerPickupDelivery", fields: [consumerId], references: [id])
-  farmer       User                     @relation("FarmerPickupDelivery", fields: [farmerId], references: [id])
+  consumer     User                 @relation("ConsumerPickupDelivery", fields: [consumerId], references: [id])
+  farmer       User                 @relation("FarmerPickupDelivery", fields: [farmerId], references: [id])
   method       PickupDeliveryMethod
-  status       PickupDeliveryStatus     @default(PENDING)
+  status       PickupDeliveryStatus @default(PENDING)
   consumerName String
   address      String?
   slotStart    DateTime
   slotEnd      DateTime
   timeZone     String
-  createdAt    DateTime                 @default(now())
-  updatedAt    DateTime                 @updatedAt
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 
   @@index([farmerId, status, slotStart])
   @@index([consumerId])
+  // Active customer/farm/slot uniqueness is enforced by a partial index in
+  // migration 20261016200000_prevent_duplicate_pickup_delivery_slots.
   @@map("pickup_delivery_requests")
 }

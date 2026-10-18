@@ -28,7 +28,7 @@ export default async function ConsumerDashboardPage({
 
   const requestedPage = Math.max(1, parseInt(page ?? '1', 10) || 1);
 
-  const [user, pendingCount, favoritesCount] = await Promise.all([
+  const [user, pendingCount, favoritesCount, requestCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: consumerId },
       select: {
@@ -42,6 +42,9 @@ export default async function ConsumerDashboardPage({
       where: { consumerId, status: { in: ['PENDING', 'CONFIRMED', 'READY'] } },
     }),
     prisma.favorite.count({ where: { consumerId } }),
+    prisma.pickupDeliveryRequest.count({
+      where: { consumerId, status: { in: ['PENDING', 'CONFIRMED'] } },
+    }),
   ]);
 
   let profile = user?.consumerProfile ?? null;
@@ -62,7 +65,7 @@ export default async function ConsumerDashboardPage({
       <main className='mx-auto grid max-w-6xl gap-6 px-6 py-8 lg:grid-cols-[260px_1fr] lg:gap-10 lg:py-12'>
         <ConsumerSidebar
           active={active}
-          pendingCount={pendingCount}
+          pendingCount={pendingCount + requestCount}
           favoritesCount={favoritesCount}
           name={name}
           image={user?.image ?? null}
@@ -88,15 +91,16 @@ export default async function ConsumerDashboardPage({
             <OrdersPanel
               consumerId={consumerId}
               firstName={name.split(' ')[0]}
-              zipCode={user?.address as string}
             />
           )}
+
           {active === 'favorites' && (
             <FavoritesPanel
               consumerId={consumerId}
               requestedPage={requestedPage}
             />
           )}
+
           {active === 'profile' && <ProfilePanel consumerId={consumerId} />}
         </div>
       </main>

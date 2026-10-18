@@ -1,3 +1,4 @@
+import { PickupDeliveryRequestCard } from '@/features/consumer/pickup-delivery-request-card';
 import {
   EmptyPending,
   PastOrderRow,
@@ -12,16 +13,24 @@ const HISTORY_LIMIT = 10;
 export async function OrdersPanel({
   consumerId,
   firstName,
-  zipCode,
 }: {
   consumerId: string;
   firstName: string;
-  zipCode: string | null;
 }) {
   const rows = await prisma.order.findMany({
     where: { consumerId },
     include: {
       items: true,
+      farmer: {
+        select: { name: true, farmerProfile: { select: { farmName: true } } },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const requests = await prisma.pickupDeliveryRequest.findMany({
+    where: { consumerId },
+    include: {
       farmer: {
         select: { name: true, farmerProfile: { select: { farmName: true } } },
       },
@@ -43,13 +52,25 @@ export async function OrdersPanel({
     })),
   }));
 
-  const pending = orders.filter((o) => PENDING_STATUSES.includes(o.status));
-  const past = orders.filter((o) => !PENDING_STATUSES.includes(o.status));
+  const entries = [
+    ...orders.map((order) => ({ kind: 'order' as const, ...order })),
+    ...requests.map((request) => ({
+      kind: 'request' as const,
+      ...request,
+      farmerName: request.farmer.farmerProfile?.farmName ?? request.farmer.name,
+    })),
+  ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const pending = entries.filter((entry) =>
+    PENDING_STATUSES.includes(entry.status)
+  );
+  const past = entries.filter((entry) =>
+    ['COMPLETED', 'CANCELLED'].includes(entry.status)
+  );
 
   const summary =
     pending.length === 0
       ? 'Nothing in progress right now.'
-      : `${pending.length} ${pending.length === 1 ? 'order is' : 'orders are'} on the way.`;
+      : `${pending.length} ${pending.length === 1 ? 'order or request is' : 'orders and requests are'} in progress.`;
 
   return (
     <div>
@@ -66,9 +87,16 @@ export async function OrdersPanel({
           <EmptyPending />
         ) : (
           <div className='space-y-5'>
-            {pending.map((o) => (
-              <PendingOrderCard key={o.id} order={o} />
-            ))}
+            {pending.map((entry) =>
+              entry.kind === 'request' ? (
+                <PickupDeliveryRequestCard
+                  key={`request-${entry.id}`}
+                  request={entry}
+                />
+              ) : (
+                <PendingOrderCard key={`order-${entry.id}`} order={entry} />
+              )
+            )}
           </div>
         )}
       </section>
@@ -79,14 +107,28 @@ export async function OrdersPanel({
         </h2>
         {past.length === 0 ? (
           <p className='text-ink/60'>
-            Completed and cancelled orders will show up here.
+            Completed and cancelled orders and pickup/delivery requests will
+            show up here.
           </p>
         ) : (
           <>
             <div className='space-y-3'>
-              {past.slice(0, HISTORY_LIMIT).map((o) => (
-                <PastOrderRow key={o.id} order={o} name={o.farmerName} />
-              ))}
+              {past
+                .slice(0, HISTORY_LIMIT)
+                .map((entry) =>
+                  entry.kind === 'request' ? (
+                    <PickupDeliveryRequestCard
+                      key={`request-${entry.id}`}
+                      request={entry}
+                    />
+                  ) : (
+                    <PastOrderRow
+                      key={`order-${entry.id}`}
+                      order={entry}
+                      name={entry.farmerName}
+                    />
+                  )
+                )}
             </div>
             {past.length > HISTORY_LIMIT && (
               <p className='text-ink/60 mt-3 text-sm'>

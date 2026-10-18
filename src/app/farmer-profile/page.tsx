@@ -81,11 +81,20 @@ export default async function FarmerProfilePage({ searchParams }: Props) {
     isFavorited = !!existing;
   }
 
+  const consumer =
+    session?.user.role === 'CONSUMER'
+      ? await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { name: true, address: true },
+        })
+      : null;
+
   return (
     <FarmerProfileView
       farm={farm}
       isFavorited={isFavorited}
       isLoggedIn={isConsumer}
+      consumer={consumer}
     />
   );
 }
