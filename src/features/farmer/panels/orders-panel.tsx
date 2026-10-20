@@ -37,6 +37,8 @@ export async function OrdersPanel({ farmerId }: { farmerId: string }) {
     ...requests.map((request) => ({
       kind: 'request' as const,
       ...request,
+      saleAmount:
+        request.saleAmount === null ? null : Number(request.saleAmount),
       slotStart: request.slotStart.toISOString(),
       slotEnd: request.slotEnd.toISOString(),
     })),

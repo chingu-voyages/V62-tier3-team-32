@@ -137,7 +137,7 @@ export async function RevenuePanel({
     `${range === '12m' ? `${first}-01` : first}T00:00:00Z`
   );
 
-  const [completed, open] = await Promise.all([
+  const [completed, open, completedRequests] = await Promise.all([
     prisma.order.findMany({
       where: { farmerId, status: 'COMPLETED', completedAt: { gte: since } },
       select: {
@@ -150,6 +150,15 @@ export async function RevenuePanel({
       where: { farmerId, status: { in: ['PENDING', 'CONFIRMED', 'READY'] } },
       _sum: { total: true },
       _count: true,
+    }),
+    prisma.pickupDeliveryRequest.findMany({
+      where: {
+        farmerId,
+        status: 'COMPLETED',
+        completedAt: { gte: since },
+        saleAmount: { not: null },
+      },
+      select: { saleAmount: true, completedAt: true },
     }),
   ]);
 
@@ -178,12 +187,23 @@ export async function RevenuePanel({
     }
   }
 
+  for (const request of completedRequests) {
+    const cents = Math.round(Number(request.saleAmount) * 100);
+    earnedCents += cents;
+    const iso = request.completedAt!.toISOString();
+    const bucket = byKey.get(
+      range === '12m' ? iso.slice(0, 7) : iso.slice(0, 10)
+    );
+    if (bucket) bucket.cents += cents;
+  }
+  const completedCount = completed.length + completedRequests.length;
+
   const topSellers = [...sellers.values()]
     .sort((a, b) => b.cents - a.cents)
     .slice(0, 5);
   const topCents = topSellers[0]?.cents ?? 1;
-  const avgCents = completed.length
-    ? Math.round(earnedCents / completed.length)
+  const avgCents = completedCount
+    ? Math.round(earnedCents / completedCount)
     : 0;
   const pipeline = Number(open._sum.total ?? 0);
   const rangeLabel = RANGES.find((r) => r.id === range)!.label;
@@ -194,7 +214,8 @@ export async function RevenuePanel({
         <div>
           <h1 className='font-display text-ink text-4xl font-bold'>Revenue</h1>
           <p className='text-ink/70 mt-2 text-lg'>
-            Counted when you mark an order completed.
+            Includes completed product orders and recorded pickup/delivery
+            sales.
           </p>
         </div>
 
@@ -228,13 +249,13 @@ export async function RevenuePanel({
           </dd>
         </div>
         <div className='border-ink/10 rounded-3xl border-2 bg-white p-6'>
-          <dt className='text-ink/60 text-sm'>Completed orders</dt>
+          <dt className='text-ink/60 text-sm'>Completed sales</dt>
           <dd className='font-display text-ink mt-1 text-3xl font-bold'>
-            {completed.length}
+            {completedCount}
           </dd>
         </div>
         <div className='border-ink/10 rounded-3xl border-2 bg-white p-6'>
-          <dt className='text-ink/60 text-sm'>Average order</dt>
+          <dt className='text-ink/60 text-sm'>Average sale</dt>
           <dd className='font-display text-ink mt-1 text-3xl font-bold'>
             {money(avgCents / 100)}
           </dd>
@@ -245,18 +266,20 @@ export async function RevenuePanel({
             {money(pipeline)}
           </dd>
           <p className='text-ink/60 mt-1 text-xs'>
-            {open._count} open {open._count === 1 ? 'order' : 'orders'}
+            Product orders only: {open._count} open{' '}
+            {open._count === 1 ? 'order' : 'orders'}
           </p>
         </div>
       </dl>
 
-      {completed.length === 0 ? (
+      {completedCount === 0 ? (
         <div className='border-ink/20 mt-8 rounded-3xl border-2 border-dashed p-10 text-center'>
           <p className='font-display text-ink text-2xl font-semibold'>
-            No completed orders in this period.
+            No recorded sales in this period.
           </p>
           <p className='text-ink/60 mt-1'>
-            Revenue shows up here once you mark an order as completed.
+            Complete a product order or record a sale amount when completing a
+            pickup/delivery request.
           </p>
         </div>
       ) : (
@@ -270,8 +293,14 @@ export async function RevenuePanel({
 
           <section className='border-ink/10 rounded-3xl border-2 bg-white p-6'>
             <h2 className='font-display text-ink mb-5 text-xl font-semibold'>
-              Top sellers
+              Top sellers (product orders)
             </h2>
+            {topSellers.length === 0 && (
+              <p className='text-ink/60 text-sm'>
+                Pickup/delivery sales have no item breakdown. Top sellers appear
+                for completed product orders.
+              </p>
+            )}
             <ol className='space-y-4'>
               {topSellers.map((s) => (
                 <li key={s.name}>

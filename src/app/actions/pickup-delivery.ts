@@ -3,6 +3,7 @@
 import {
   isRequestSlotValid,
   pickupDeliverySchema,
+  requestSaleAmountSchema,
 } from '@/lib/pickup-delivery';
 import { prisma } from '@/lib/prisma';
 import { getConsumerSession, getFarmerSession } from '@/lib/session';
@@ -107,10 +108,16 @@ export async function createPickupDeliveryRequest(
 
 export async function updatePickupDeliveryStatus(
   id: string,
-  status: 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
+  status: 'CONFIRMED' | 'COMPLETED' | 'CANCELLED',
+  saleAmount?: string
 ): Promise<Result> {
   const session = await getFarmerSession();
   if (!session) return { error: 'Sign in as a farmer to update requests.' };
+  const amount = requestSaleAmountSchema.safeParse(saleAmount);
+  if (status === 'COMPLETED' && !amount.success)
+    return {
+      error: 'Enter a valid sale amount with up to two decimal places.',
+    };
   const allowed: Record<string, string[]> = {
     PENDING: ['CONFIRMED', 'CANCELLED'],
     CONFIRMED: ['COMPLETED', 'CANCELLED'],
@@ -125,7 +132,12 @@ export async function updatePickupDeliveryStatus(
       };
     const result = await prisma.pickupDeliveryRequest.updateMany({
       where: { id, farmerId: session.user.id, status: request.status },
-      data: { status },
+      data: {
+        status,
+        ...(status === 'COMPLETED' && amount.success
+          ? { saleAmount: amount.data, completedAt: new Date() }
+          : {}),
+      },
     });
     if (!result.count)
       return { error: 'This request was just updated. Refresh and try again.' };

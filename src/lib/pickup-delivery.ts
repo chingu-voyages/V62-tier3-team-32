@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+// Accept USD amounts exactly to cents; do not round invalid input.
+export const requestSaleAmountSchema = z
+  .string()
+  .trim()
+  .regex(
+    /^(0|[1-9]\d{0,7})(\.\d{1,2})?$/,
+    'Enter an amount from $0 to $99,999,999.99 with up to two decimal places.'
+  );
+
 export const pickupDeliverySchema = z
   .object({
     id: z.uuid(),

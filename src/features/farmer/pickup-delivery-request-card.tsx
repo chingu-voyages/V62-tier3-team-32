@@ -2,6 +2,7 @@
 
 import { updatePickupDeliveryStatus } from '@/app/actions/pickup-delivery';
 import { StatusPill } from '@/features/orders/order-ui';
+import { money } from '@/lib/format';
 import { useState, useTransition } from 'react';
 
 type RequestView = {
@@ -13,6 +14,7 @@ type RequestView = {
   slotStart: string;
   slotEnd: string;
   timeZone: string;
+  saleAmount: number | null;
 };
 
 export function PickupDeliveryRequestCard({
@@ -22,6 +24,7 @@ export function PickupDeliveryRequestCard({
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState('');
+  const [saleAmount, setSaleAmount] = useState('');
   const date = new Intl.DateTimeFormat('en-US', {
     timeZone: request.timeZone,
     weekday: 'short',
@@ -38,7 +41,11 @@ export function PickupDeliveryRequestCard({
     setError('');
     startTransition(async () => {
       try {
-        const result = await updatePickupDeliveryStatus(request.id, status);
+        const result = await updatePickupDeliveryStatus(
+          request.id,
+          status,
+          saleAmount
+        );
         if ('error' in result) setError(result.error);
       } catch {
         setError('Unable to update. Please try again.');
@@ -71,6 +78,40 @@ export function PickupDeliveryRequestCard({
         </strong>{' '}
         {request.address || 'Not listed'}
       </p>
+      {request.status === 'COMPLETED' && (
+        <p className='mt-3 font-semibold'>
+          {request.saleAmount === null
+            ? 'Sale amount not recorded'
+            : `Sale amount: ${money(request.saleAmount)}`}
+        </p>
+      )}
+      {request.status === 'CONFIRMED' && (
+        <div className='mt-4'>
+          <label
+            htmlFor={`sale-amount-${request.id}`}
+            className='block font-semibold'
+          >
+            Actual sale amount (USD)
+          </label>
+          <input
+            id={`sale-amount-${request.id}`}
+            type='number'
+            inputMode='decimal'
+            min='0'
+            max='99999999.99'
+            step='0.01'
+            value={saleAmount}
+            onChange={(event) => setSaleAmount(event.target.value)}
+            disabled={pending}
+            className='mt-2 w-full max-w-xs rounded-xl border p-3'
+            placeholder='0.00'
+          />
+          <p className='mt-1 text-sm'>
+            Enter the sale total for this request only. Exclude sales already
+            recorded as product orders.
+          </p>
+        </div>
+      )}
       {error && (
         <p role='alert' className='mt-3 text-red-700'>
           {error}
