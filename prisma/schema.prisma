@@ -264,6 +264,10 @@ model PickupDeliveryRequest {
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
 
+  saleAmount   Decimal?             @db.Decimal(10, 2)
+  completedAt  DateTime?
+
+  @@index([farmerId, status, completedAt])
   @@index([farmerId, status, slotStart])
   @@index([consumerId])
   // Active customer/farm/slot uniqueness is enforced by a partial index in

@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { isRequestSlotValid, pickupDeliverySchema } from './pickup-delivery';
+import {
+  isRequestSlotValid,
+  pickupDeliverySchema,
+  requestSaleAmountSchema,
+} from './pickup-delivery';
 
 const now = new Date('2026-10-16T14:00:00Z');
 const zone = 'America/New_York';
@@ -81,4 +85,38 @@ test('requires a delivery address but permits pickup without one', () => {
     pickupDeliverySchema.safeParse({ ...input, method: 'BOTH' }).success,
     false
   );
+});
+
+test('sale amounts accept zero and exact cents within the database limit', () => {
+  for (const value of [
+    '0',
+    '0.00',
+    '12',
+    '12.5',
+    '12.50',
+    ' 12.50 ',
+    '99999999.99',
+  ])
+    assert.equal(requestSaleAmountSchema.safeParse(value).success, true, value);
+});
+
+test('sale amounts reject missing, negative, fractional-cent, infinite and overflowing input', () => {
+  for (const value of [
+    undefined,
+    null,
+    '',
+    ' ',
+    '-1',
+    '1.001',
+    '100000000',
+    'Infinity',
+    'NaN',
+    '1e3',
+    12,
+  ])
+    assert.equal(
+      requestSaleAmountSchema.safeParse(value).success,
+      false,
+      String(value)
+    );
 });
